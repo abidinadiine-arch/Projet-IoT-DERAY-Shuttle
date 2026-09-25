@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEBN.TN — Créer un compte</title>
+<style>
+/* (mêmes variables et styles que login.html) */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root { --navy:#050d1a;--blue:#2563eb;--blue2:#3b82f6;--teal:#0891b2;--green:#10b981;--red:#ef4444;--border:rgba(255,255,255,.08);--border2:rgba(255,255,255,.14);--text:#e8f0fe;--muted:#8b9dc3;--subtle:#4a5f85; }
+html,body{height:100%;}
+body{background:var(--navy);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0;}
+.orb{position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0;}
+.orb1{width:500px;height:500px;background:rgba(37,99,235,.12);top:-150px;right:-100px;}
+.orb2{width:400px;height:400px;background:rgba(8,145,178,.08);bottom:-100px;left:-80px;}
+.auth-wrap{position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.auth-card{background:rgba(10,22,40,.85);border:1px solid var(--border2);border-radius:20px;padding:40px 44px;width:100%;max-width:480px;backdrop-filter:blur(20px);position:relative;}
+.auth-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,var(--blue),var(--teal));}
+.logo-block{text-align:center;margin-bottom:32px;}
+.logo-pill{display:inline-flex;align-items:center;background:#fff;border-radius:10px;padding:7px 16px;margin-bottom:16px;box-shadow:0 0 30px rgba(37,99,235,.25);}
+.logo-pill img{height:28px;width:auto;display:block;object-fit:contain;}
+.logo-block h2{font-size:22px;font-weight:700;color:#fff;}
+.logo-block p{font-size:12px;color:var(--muted);margin-top:5px;}
+.form-group{margin-bottom:18px;}
+.form-label{display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:.03em;}
+.form-input{width:100%;padding:12px 16px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all .25s;}
+.form-input::placeholder{color:var(--subtle);}
+.form-input:focus{border-color:var(--blue2);background:rgba(37,99,235,.08);box-shadow:0 0 0 3px rgba(37,99,235,.15);}
+.form-input.error{border-color:var(--red);box-shadow:0 0 0 3px rgba(239,68,68,.12);}
+.form-error{font-size:11px;color:#fca5a5;margin-top:5px;display:none;}
+.form-error.show{display:block;}
+.btn-primary{width:100%;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .25s;letter-spacing:.02em;}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 25px rgba(37,99,235,.4);}
+.btn-primary:disabled{opacity:.6;cursor:default;transform:none;}
+.btn-primary .spinner{display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto;}
+.btn-primary.loading .btn-text{display:none;}
+.btn-primary.loading .spinner{display:block;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.alert-box{padding:12px 14px;border-radius:9px;font-size:12px;font-weight:500;margin-bottom:18px;display:none;}
+.alert-box.show{display:flex;align-items:center;gap:8px;}
+.alert-box.err{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5;}
+.alert-box.suc{background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.25);color:#6ee7b7;}
+.auth-footer{text-align:center;margin-top:18px;font-size:12px;color:var(--muted);}
+.auth-link{color:var(--blue2);font-weight:600;text-decoration:none;transition:color .2s;}
+.auth-link:hover{color:#93c5fd;}
+.pass-strength{margin-top:6px;height:3px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden;}
+.pass-bar{height:100%;border-radius:2px;width:0%;transition:width .3s,background .3s;}
+.pass-label{font-size:10px;color:var(--subtle);margin-top:4px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo-block">
+      <div class="logo-pill"><img src="[VOTRE_LOGO_BASE64]" alt="SEBN.TN"></div>
+      <h2>Créer un compte</h2>
+      <p>Rejoignez la plateforme IoT SEBN.TN</p>
+    </div>
+
+    <div class="alert-box suc" id="alertSuc"><span>✓</span><span>Compte créé ! Redirection...</span></div>
+    <div class="alert-box err" id="alertErr"><span>⚠</span><span id="alertErrTxt">Erreur</span></div>
+
+    <form id="signupForm" onsubmit="doSignup(event)">
+      <div class="grid2">
+        <div class="form-group">
+          <label class="form-label">Prénom</label>
+          <input type="text" id="prenom" class="form-input" placeholder="Prénom" required>
+          <div class="form-error" id="errPrenom">Requis</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Nom</label>
+          <input type="text" id="nom" class="form-input" placeholder="Nom" required>
+          <div class="form-error" id="errNom">Requis</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Adresse email</label>
+        <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
+        <div class="form-error" id="errEmail">Email invalide</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Rôle / Poste</label>
+        <select id="role" class="form-input" style="cursor:pointer">
+          <option value="">Sélectionner un rôle...</option>
+          <option value="ingenieur">Ingénieur IoT</option>
+          <option value="technicien">Technicien de production</option>
+          <option value="superviseur">Superviseur</option>
+          <option value="etudiant">Étudiant / Stagiaire</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" id="password" class="form-input" placeholder="Min. 8 caractères" required oninput="checkStrength(this.value)">
+        <div class="pass-strength"><div class="pass-bar" id="passBar"></div></div>
+        <div class="pass-label" id="passLabel">Entrez un mot de passe</div>
+        <div class="form-error" id="errPwd">Min. 8 caractères requis</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Confirmer le mot de passe</label>
+        <input type="password" id="confirm" class="form-input" placeholder="Répéter le mot de passe" required>
+        <div class="form-error" id="errConfirm">Les mots de passe ne correspondent pas</div>
+      </div>
+      <div class="form-group" style="margin-bottom:22px">
+        <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:var(--muted)">
+          <input type="checkbox" id="terms" style="margin-top:2px;accent-color:var(--blue2)" required>
+          J'accepte les conditions d'utilisation de la plateforme SEBN.TN IoT
+        </label>
+      </div>
+      <button type="submit" class="btn-primary" id="signupBtn">
+        <span class="btn-text">Créer mon compte →</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="auth-footer" style="margin-top:20px">Déjà un compte ? <a href="login.html" class="auth-link">Se connecter</a></div>
+    <div class="auth-footer" style="margin-top:8px"><a href="index.html" class="auth-link" style="color:var(--subtle)">← Retour à l'accueil</a></div>
+  </div>
+</div>
+
+<script>
+function checkStrength(v) {
+  var bar=document.getElementById('passBar'), lbl=document.getElementById('passLabel'), s=0;
+  if(v.length>=8)s++; if(/[A-Z]/.test(v))s++; if(/[0-9]/.test(v))s++; if(/[^A-Za-z0-9]/.test(v))s++;
+  var colors=['#ef4444','#f59e0b','#10b981','#3b82f6'];
+  var labels=['Très faible','Moyen','Fort','Très fort'];
+  bar.style.width=(s*25)+'%'; bar.style.background=colors[s-1]||'#ef4444';
+  lbl.textContent=v.length===0?'Entrez un mot de passe':labels[s-1]||'Très faible';
+  lbl.style.color=colors[s-1]||'var(--subtle)';
+}
+function doSignup(e) {
+  e.preventDefault();
+  var prenom=document.getElementById('prenom').value.trim();
+  var nom=document.getElementById('nom').value.trim();
+  var email=document.getElementById('email').value.trim();
+  var pwd=document.getElementById('password').value;
+  var confirm=document.getElementById('confirm').value;
+  var btn=document.getElementById('signupBtn');
+  ['prenom','nom','email','password','confirm'].forEach(function(id){ document.getElementById(id).classList.remove('error'); });
+  ['errPrenom','errNom','errEmail','errPwd','errConfirm'].forEach(function(id){ document.getElementById(id).classList.remove('show'); });
+  document.getElementById('alertErr').className='alert-box err';
+  var ok=true;
+  if(!prenom){ document.getElementById('prenom').classList.add('error'); document.getElementById('errPrenom').classList.add('show'); ok=false; }
+  if(!nom){ document.getElementById('nom').classList.add('error'); document.getElementById('errNom').classList.add('show'); ok=false; }
+  if(!email||!email.includes('@')){ document.getElementById('email').classList.add('error'); document.getElementById('errEmail').classList.add('show'); ok=false; }
+  if(pwd.length<8){ document.getElementById('password').classList.add('error'); document.getElementById('errPwd').classList.add('show'); ok=false; }
+  if(pwd!==confirm){ document.getElementById('confirm').classList.add('error'); document.getElementById('errConfirm').classList.add('show'); ok=false; }
+  if(!document.getElementById('terms').checked){ document.getElementById('alertErr').className='alert-box err show'; document.getElementById('alertErrTxt').textContent='Vous devez accepter les conditions'; ok=false; }
+  if(!ok) return;
+  btn.classList.add('loading'); btn.disabled=true;
+  setTimeout(function() {
+    var accounts=JSON.parse(localStorage.getItem('sebn_accounts')||'[]');
+    if(accounts.find(function(a){return a.email===email;})){
+      btn.classList.remove('loading'); btn.disabled=false;
+      document.getElementById('alertErr').className='alert-box err show';
+      document.getElementById('alertErrTxt').textContent='Cet email est déjà utilisé.';
+      return;
+    }
+    accounts.push({prenom:prenom,nom:nom,email:email,password:pwd,role:document.getElementById('role').value});
+    localStorage.setItem('sebn_accounts',JSON.stringify(accounts));
+    btn.classList.remove('loading'); btn.disabled=false;
+    document.getElementById('alertSuc').className='alert-box suc show';
+    setTimeout(function(){ window.location.href='login.html'; },2000);
+  },1500);
+}
+(function(){ var active=sessionStorage.getItem('sebn_user')||localStorage.getItem('sebn_user'); if(active){window.location.href='dashboard_pro_v3.html';} })();
+</script>
+</body>
+</html>
