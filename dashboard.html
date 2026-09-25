@@ -1,0 +1,2313 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEBN.TN — Surveillance IoT</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   RESET & VARIABLES
+═══════════════════════════════════════════ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  /* Core palette */
+  --bg:      #060b16;
+  --surface: #0b1424;
+  --card:    #0e1929;
+  --card2:   #112034;
+  --border:  rgba(255,255,255,.06);
+  --border2: rgba(255,255,255,.1);
+  --border3: rgba(255,255,255,.16);
+
+  /* Brand colors */
+  --blue:    #2563eb;
+  --blue2:   #3b82f6;
+  --blue3:   #60a5fa;
+  --teal:    #0891b2;
+  --teal2:   #22d3ee;
+  --green:   #10b981;
+  --green2:  #34d399;
+  --amber:   #f59e0b;
+  --red:     #ef4444;
+  --red2:    #f87171;
+  --violet:  #7c3aed;
+  --violet2: #a78bfa;
+  --rose:    #e11d48;
+  --rose2:   #fb7185;
+  --emerald: #059669;
+  --emerald2:#34d399;
+
+  /* Text */
+  --text:    #e2eaf8;
+  --text2:   #b8c8e8;
+  --muted:   #6b85b0;
+  --subtle:  #3d5278;
+
+  /* Glows */
+  --glow-b:  rgba(37,99,235,.3);
+  --glow-g:  rgba(16,185,129,.3);
+  --glow-r:  rgba(239,68,68,.3);
+
+  /* Fonts */
+  --f-brand:  'Rajdhani', sans-serif;
+  --f-body:   'DM Sans', sans-serif;
+  --f-mono:   'JetBrains Mono', monospace;
+
+  /* Radius */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 18px;
+  --r-xl: 24px;
+}
+
+html, body { height: 100%; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--f-body);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── Animated background ── */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37,99,235,.06) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 80%, rgba(8,145,178,.05) 0%, transparent 55%),
+    radial-gradient(ellipse 40% 30% at 50% 50%, rgba(124,58,237,.03) 0%, transparent 60%);
+  pointer-events: none; z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(37,99,235,.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none; z-index: 0;
+}
+
+/* ═══════════════════════════════════════════
+   TOPBAR
+═══════════════════════════════════════════ */
+.topbar {
+  position: sticky; top: 0; z-index: 100;
+  background: rgba(6,11,22,.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border-bottom: 1px solid var(--border2);
+  padding: 0 32px;
+  height: 66px;
+  display: flex; align-items: center; justify-content: space-between;
+}
+.topbar::after {
+  content: '';
+  position: absolute; bottom: 0; left: 0; right: 0; height: 1px;
+  background: linear-gradient(90deg,
+    transparent 0%,
+    rgba(37,99,235,.6) 20%,
+    rgba(8,145,178,.8) 50%,
+    rgba(37,99,235,.6) 80%,
+    transparent 100%);
+}
+
+.brand { display: flex; align-items: center; gap: 18px; }
+.logo-pill {
+  background: #ffffff;
+  border-radius: var(--r-sm);
+  padding: 5px 12px;
+  height: 42px;
+  display: flex; align-items: center;
+  box-shadow: 0 0 0 1px rgba(0,0,0,.1), 0 4px 16px rgba(37,99,235,.15);
+  flex-shrink: 0;
+}
+.logo-pill img { height: 26px; width: auto; display: block; object-fit: contain; }
+
+.brand-divider { width: 1px; height: 34px; background: var(--border2); }
+
+.brand-text .brand-name {
+  font-family: var(--f-brand);
+  font-size: 17px; font-weight: 700;
+  color: #fff; letter-spacing: .02em;
+  line-height: 1.1;
+}
+.brand-text .brand-sub {
+  font-size: 10px; color: var(--muted);
+  margin-top: 3px; letter-spacing: .04em;
+  font-family: var(--f-mono);
+}
+
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+
+/* Connection badge */
+.conn-badge {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 14px; border-radius: 24px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.04);
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  transition: all .4s;
+  font-family: var(--f-body);
+}
+.conn-badge.live {
+  border-color: rgba(16,185,129,.35);
+  background: rgba(16,185,129,.08);
+  color: var(--green2);
+}
+.conn-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--red); flex-shrink: 0;
+  transition: background .3s;
+}
+.conn-dot.on {
+  background: var(--green);
+  box-shadow: 0 0 0 2px rgba(16,185,129,.2), 0 0 8px var(--green);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: .5; transform: scale(.85); }
+}
+
+.top-time {
+  font-family: var(--f-mono);
+  font-size: 12px; color: var(--muted);
+  background: rgba(255,255,255,.04);
+  padding: 5px 12px; border-radius: var(--r-sm);
+  border: 1px solid var(--border);
+  letter-spacing: .04em;
+}
+
+/* Theme button */
+.theme-btn {
+  display: flex; align-items: center; gap: 7px;
+  padding: 6px 16px; border-radius: 24px;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.05);
+  color: var(--muted); font-size: 12px; font-weight: 600;
+  cursor: pointer; font-family: var(--f-body);
+  transition: all .2s; user-select: none;
+  letter-spacing: .01em;
+}
+.theme-btn:hover { background: rgba(255,255,255,.1); color: var(--text2); }
+.theme-icon { font-size: 14px; transition: transform .5s cubic-bezier(.34,1.56,.64,1); }
+.theme-btn:hover .theme-icon { transform: rotate(25deg); }
+
+/* User badge */
+.user-badge {
+  display: flex; align-items: center; gap: 10px;
+  padding: 5px 14px 5px 5px;
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border2);
+  border-radius: 28px; cursor: pointer;
+  transition: all .2s; position: relative;
+}
+.user-badge:hover { background: rgba(255,255,255,.08); border-color: var(--border3); }
+.user-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; color: #fff; flex-shrink: 0;
+  box-shadow: 0 0 0 2px rgba(37,99,235,.3);
+}
+.user-name { font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.2; }
+.user-role { font-size: 10px; color: var(--muted); letter-spacing: .02em; }
+.user-chevron { font-size: 10px; color: var(--subtle); margin-left: 2px; transition: transform .2s; }
+.user-badge:hover .user-chevron { transform: translateY(1px); }
+
+/* Dropdown */
+.user-dropdown {
+  display: none; position: absolute;
+  top: calc(100% + 10px); right: 0;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: var(--r-md); min-width: 210px; padding: 8px;
+  box-shadow: 0 24px 60px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.04);
+  z-index: 200;
+}
+.user-dropdown.open { display: block; animation: ddIn .18s cubic-bezier(.34,1.56,.64,1); }
+@keyframes ddIn {
+  from { opacity: 0; transform: translateY(-8px) scale(.97); }
+  to   { opacity: 1; transform: none; }
+}
+.dd-header {
+  padding: 10px 12px 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 6px;
+}
+.dd-header .dh-name { font-size: 13px; font-weight: 700; color: #fff; font-family: var(--f-brand); letter-spacing: .02em; }
+.dd-header .dh-email { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.dd-item {
+  display: flex; align-items: center; gap: 10px;
+  padding: 9px 12px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 500; color: var(--muted);
+  cursor: pointer; transition: all .15s;
+}
+.dd-item:hover { background: rgba(255,255,255,.06); color: var(--text2); }
+.dd-item.danger { color: var(--red2); }
+.dd-item.danger:hover { background: rgba(239,68,68,.1); color: #fca5a5; }
+.dd-icon { font-size: 14px; width: 18px; text-align: center; }
+
+/* ═══════════════════════════════════════════
+   SUBBAR
+═══════════════════════════════════════════ */
+.subbar {
+  background: rgba(11,20,36,.9);
+  border-bottom: 1px solid var(--border);
+  padding: 7px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+.subbar-left { display: flex; align-items: center; gap: 12px; }
+.badge-iot {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  color: #fff; font-size: 9px; font-weight: 800;
+  padding: 3px 9px; border-radius: 5px;
+  letter-spacing: .1em; font-family: var(--f-brand);
+  box-shadow: 0 2px 8px rgba(37,99,235,.3);
+}
+.subbar-title { font-size: 12px; font-weight: 400; color: rgba(255,255,255,.5); letter-spacing: .01em; }
+.subbar-right { font-size: 10px; color: var(--subtle); display: flex; gap: 20px; font-family: var(--f-mono); }
+.subbar-right span { display: flex; align-items: center; gap: 6px; }
+.subbar-right span::before {
+  content: ''; width: 4px; height: 4px;
+  border-radius: 50%; background: var(--subtle);
+  opacity: .6;
+}
+
+/* ═══════════════════════════════════════════
+   PAGE LAYOUT
+═══════════════════════════════════════════ */
+.page {
+  position: relative; z-index: 1;
+  max-width: 1320px; margin: 0 auto;
+  padding: 28px 32px 48px;
+  display: flex; flex-direction: column; gap: 20px;
+}
+
+/* ═══════════════════════════════════════════
+   SECTION LABELS
+═══════════════════════════════════════════ */
+.section-label {
+  font-family: var(--f-brand);
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .12em;
+  color: var(--muted); margin-bottom: 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.section-label::before {
+  content: '';
+  width: 3px; height: 14px;
+  background: linear-gradient(var(--blue), var(--teal));
+  border-radius: 2px;
+}
+.section-label::after {
+  content: ''; flex: 1; height: 1px;
+  background: linear-gradient(90deg, var(--border2), transparent);
+}
+
+/* ═══════════════════════════════════════════
+   STATUS BANNER
+═══════════════════════════════════════════ */
+.stat-banner {
+  border-radius: var(--r-lg); border: 1px solid;
+  padding: 22px 28px;
+  display: flex; align-items: center; gap: 24px;
+  transition: all .5s; position: relative; overflow: hidden;
+}
+.stat-banner::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+/* Subtle shine effect */
+.stat-banner::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255,255,255,.03), transparent);
+  pointer-events: none;
+}
+.stat-banner.ok {
+  background: rgba(16,185,129,.05);
+  border-color: rgba(16,185,129,.18);
+  box-shadow: 0 8px 32px rgba(0,0,0,.3), inset 0 1px 0 rgba(16,185,129,.1);
+}
+.stat-banner.ok::before { background: linear-gradient(90deg, var(--green), var(--green2), var(--teal2)); }
+.stat-banner.err {
+  background: rgba(239,68,68,.06);
+  border-color: rgba(239,68,68,.22);
+  animation: banner-pulse 2s ease-in-out infinite;
+  box-shadow: 0 8px 32px rgba(239,68,68,.08);
+}
+.stat-banner.err::before { background: linear-gradient(90deg, var(--red), var(--red2), #fca5a5); }
+@keyframes banner-pulse {
+  0%, 100% { box-shadow: 0 8px 32px rgba(0,0,0,.3); }
+  50% { box-shadow: 0 8px 40px rgba(239,68,68,.2), 0 0 80px rgba(239,68,68,.08); }
+}
+
+.banner-icon {
+  width: 60px; height: 60px; border-radius: var(--r-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px; flex-shrink: 0; transition: all .4s;
+  position: relative; z-index: 1;
+}
+.stat-banner.ok  .banner-icon { background: rgba(16,185,129,.12); border: 1px solid rgba(16,185,129,.2); }
+.stat-banner.err .banner-icon { background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.25); animation: icon-shake .5s infinite; }
+@keyframes icon-shake {
+  0%, 100% { transform: rotate(0deg); }
+  25%  { transform: rotate(-6deg); }
+  75%  { transform: rotate(6deg); }
+}
+
+.banner-body { flex: 1; position: relative; z-index: 1; }
+.banner-title {
+  font-family: var(--f-brand);
+  font-size: 22px; font-weight: 700; color: #fff;
+  letter-spacing: .02em; line-height: 1.1;
+}
+.banner-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+
+.banner-raison {
+  display: none; margin-top: 12px;
+  padding: 9px 16px;
+  background: rgba(239,68,68,.1);
+  border: 1px solid rgba(239,68,68,.22);
+  border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 600; color: #fca5a5;
+  font-family: var(--f-mono);
+}
+.banner-raison.show { display: block; }
+
+.banner-stats {
+  display: flex; gap: 28px; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.bstat { text-align: center; }
+.bstat-val {
+  font-family: var(--f-brand);
+  font-size: 32px; font-weight: 700; color: #fff; line-height: 1;
+}
+.bstat-lbl {
+  font-size: 9px; color: var(--subtle);
+  margin-top: 4px; text-transform: uppercase; letter-spacing: .08em;
+  font-family: var(--f-brand);
+}
+
+/* LED indicator */
+.led-group {
+  display: flex; flex-direction: column;
+  align-items: center; gap: 8px; flex-shrink: 0;
+  position: relative; z-index: 1;
+}
+.led-orb {
+  width: 48px; height: 48px; border-radius: 50%;
+  border: 2px solid; display: flex; align-items: center; justify-content: center;
+  font-family: var(--f-mono); font-size: 9px; font-weight: 700;
+  transition: all .3s; letter-spacing: .03em;
+}
+.led-orb.r-off { background: rgba(239,68,68,.08); border-color: rgba(239,68,68,.22); color: rgba(239,68,68,.4); }
+.led-orb.r-on {
+  background: var(--red);
+  border-color: #b91c1c; color: #fff;
+  box-shadow: 0 0 16px rgba(239,68,68,.5), 0 0 32px rgba(239,68,68,.25), 0 0 60px rgba(239,68,68,.12);
+  animation: led-blink .8s ease-in-out infinite;
+}
+@keyframes led-blink { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.led-label {
+  font-size: 9px; color: var(--subtle);
+  text-transform: uppercase; letter-spacing: .08em;
+  font-family: var(--f-brand);
+}
+
+/* ═══════════════════════════════════════════
+   KPI GRID
+═══════════════════════════════════════════ */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+@media (max-width: 1100px) { .kpi-grid { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 680px)  { .kpi-grid { grid-template-columns: repeat(2, 1fr); } }
+
+.kcard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px;
+  position: relative; overflow: hidden;
+  transition: border-color .3s, transform .25s, box-shadow .3s;
+  cursor: default;
+}
+.kcard:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 40px rgba(0,0,0,.4);
+  border-color: var(--border2);
+}
+/* Colored top accent */
+.kcard::before {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0; height: 2px;
+  border-radius: var(--r-lg) var(--r-lg) 0 0;
+}
+/* Subtle inner glow */
+.kcard::after {
+  content: ''; position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 40%; border-radius: var(--r-lg) var(--r-lg) 0 0;
+  background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+  pointer-events: none;
+}
+.kcard.blue::before   { background: linear-gradient(90deg, var(--blue), var(--blue2), var(--blue3)); }
+.kcard.teal::before   { background: linear-gradient(90deg, var(--teal), var(--teal2)); }
+.kcard.violet::before { background: linear-gradient(90deg, var(--violet), var(--violet2)); }
+.kcard.rose::before   { background: linear-gradient(90deg, var(--rose), var(--rose2)); }
+.kcard.emerald::before{ background: linear-gradient(90deg, var(--emerald), var(--emerald2)); }
+.kcard.warn {
+  border-color: rgba(239,68,68,.3) !important;
+  background: rgba(239,68,68,.04);
+}
+.kcard.warn::before { background: linear-gradient(90deg, var(--red), var(--red2)) !important; }
+
+.kcard-bg-icon {
+  position: absolute; right: 18px; top: 50%;
+  transform: translateY(-50%);
+  font-size: 56px; opacity: .04;
+  user-select: none; pointer-events: none;
+}
+
+.klabel {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); margin-bottom: 14px;
+  display: flex; align-items: center; gap: 7px;
+  font-family: var(--f-brand);
+}
+.klabel-dot { width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+
+.kvalue-row { display: flex; align-items: baseline; gap: 5px; }
+.kvalue {
+  font-family: var(--f-brand);
+  font-size: 44px; font-weight: 700; color: #fff; line-height: 1;
+  font-variant-numeric: tabular-nums;
+  transition: color .3s;
+  letter-spacing: -.01em;
+}
+.kunit { font-size: 16px; font-weight: 500; color: var(--muted); font-family: var(--f-body); }
+
+.kbar {
+  margin-top: 16px; height: 3px;
+  background: rgba(255,255,255,.05);
+  border-radius: 2px; overflow: hidden;
+}
+.kbar-fill {
+  height: 100%; border-radius: 2px;
+  transition: width .9s cubic-bezier(.25,.46,.45,.94), background .4s;
+}
+
+.ksub {
+  margin-top: 10px; font-size: 11px;
+  color: var(--muted); display: flex; align-items: center; gap: 6px;
+}
+.ksub-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+.ksub-dot.bad { background: var(--red); animation: pulse-dot 1s infinite; }
+
+.vib-badge {
+  display: inline-flex; align-items: center; gap: 7px;
+  padding: 10px 14px; border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 700; margin-top: 8px;
+  transition: all .3s; font-family: var(--f-brand); letter-spacing: .02em;
+}
+.vib-badge.ok  { background: rgba(16,185,129,.1); color: var(--green2); border: 1px solid rgba(16,185,129,.18); }
+.vib-badge.err { background: rgba(239,68,68,.1); color: #fca5a5; border: 1px solid rgba(239,68,68,.22); animation: led-blink 1s infinite; }
+
+/* ═══════════════════════════════════════════
+   MIDDLE ROW
+═══════════════════════════════════════════ */
+.mid-row {
+  display: grid; grid-template-columns: 1.2fr 1fr; gap: 14px;
+}
+@media (max-width: 800px) { .mid-row { grid-template-columns: 1fr; } }
+
+/* Card base */
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+}
+.card-title {
+  font-family: var(--f-brand);
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--muted); margin-bottom: 18px;
+}
+
+/* Gauge */
+.gauge-zones {
+  display: flex; height: 10px;
+  border-radius: 6px; overflow: hidden;
+  gap: 3px; margin-bottom: 10px;
+}
+.gz {
+  display: flex; align-items: center; justify-content: center;
+  font-size: 8px; font-weight: 700; border-radius: 4px;
+  text-transform: uppercase; letter-spacing: .05em;
+  font-family: var(--f-brand);
+}
+.gz.ok  { background: rgba(16,185,129,.2); color: var(--green2); flex: 3; }
+.gz.hot { background: rgba(239,68,68,.2);  color: #fca5a5; flex: 1; }
+
+.gauge-track {
+  height: 8px; background: rgba(255,255,255,.06);
+  border-radius: 4px; position: relative;
+  overflow: visible; margin-top: 10px;
+}
+.gauge-fill {
+  position: absolute; top: 0; left: 0; bottom: 0;
+  border-radius: 4px;
+  transition: width .7s ease, background .4s;
+}
+.gauge-cursor {
+  position: absolute; top: 50%;
+  transform: translate(-50%, -50%);
+  width: 20px; height: 20px; border-radius: 50%;
+  background: var(--blue2);
+  border: 3px solid var(--bg);
+  box-shadow: 0 0 12px var(--glow-b), 0 0 0 2px var(--blue2);
+  transition: left .7s ease, background .4s; left: 50%;
+}
+.gauge-ticks {
+  display: flex; justify-content: space-between;
+  margin-top: 14px; font-size: 10px; color: var(--subtle);
+  font-family: var(--f-mono);
+}
+
+/* Recap table */
+.recap-table { width: 100%; border-collapse: collapse; }
+.recap-table tr { border-bottom: 1px solid var(--border); }
+.recap-table tr:last-child { border: none; }
+.recap-table td { padding: 10px 0; font-size: 12px; vertical-align: middle; }
+.rt-label { color: var(--muted); display: flex; align-items: center; gap: 8px; }
+.rt-chip {
+  font-size: 9px; font-weight: 700;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border);
+  border-radius: 5px; padding: 2px 7px;
+  color: var(--subtle); letter-spacing: .04em;
+  font-family: var(--f-mono);
+}
+.rt-val {
+  text-align: right; font-weight: 700; font-size: 13px;
+  transition: color .3s; font-family: var(--f-mono);
+}
+.rt-val.good { color: var(--green2); }
+.rt-val.bad  { color: #fca5a5; }
+.rt-val.neu  { color: var(--muted); }
+
+/* ═══════════════════════════════════════════
+   CHART CARD
+═══════════════════════════════════════════ */
+.chart-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+}
+.chart-head {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 18px;
+}
+.chart-title {
+  font-size: 13px; font-weight: 600; color: var(--text2);
+  font-family: var(--f-body);
+}
+.chart-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.cpill {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border);
+  border-radius: 20px; padding: 3px 12px;
+  font-size: 10px; color: var(--muted); font-weight: 500;
+  font-family: var(--f-mono);
+}
+.chart-wrap {
+  position: relative; height: 130px;
+  background: rgba(255,255,255,.02);
+  border-radius: var(--r-sm); overflow: hidden;
+  border: 1px solid var(--border);
+}
+svg.spark { width: 100%; height: 100%; display: block; overflow: visible; }
+
+/* ═══════════════════════════════════════════
+   LOG CARD
+═══════════════════════════════════════════ */
+.log-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  padding: 22px 24px;
+}
+.log-head {
+  display: flex; justify-content: space-between;
+  align-items: center; margin-bottom: 16px;
+}
+.log-clear-btn {
+  background: rgba(255,255,255,.04);
+  border: 1px solid var(--border2);
+  color: var(--muted); border-radius: var(--r-sm);
+  padding: 6px 14px; font-size: 11px; font-weight: 600;
+  cursor: pointer; font-family: var(--f-body);
+  transition: all .2s; letter-spacing: .02em;
+}
+.log-clear-btn:hover { background: rgba(255,255,255,.09); color: var(--text2); }
+
+.log-body { display: flex; flex-direction: column; gap: 0; }
+.log-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 8px 0; border-bottom: 1px solid var(--border);
+  font-size: 12px; animation: log-in .3s ease;
+}
+.log-row:last-child { border: none; }
+@keyframes log-in {
+  from { opacity: 0; transform: translateX(-10px); }
+  to   { opacity: 1; transform: none; }
+}
+.log-ts {
+  color: var(--subtle); font-family: var(--f-mono);
+  font-size: 10px; min-width: 60px; letter-spacing: .03em;
+}
+.log-badge {
+  border-radius: 5px; padding: 2px 10px;
+  font-size: 9px; font-weight: 700;
+  min-width: 68px; text-align: center;
+  letter-spacing: .06em; font-family: var(--f-brand);
+}
+.ALERTE { background: rgba(239,68,68,.18);  color: #fca5a5; }
+.NORMAL { background: rgba(16,185,129,.15); color: var(--green2); }
+.INFO   { background: rgba(37,99,235,.18);  color: #93c5fd; }
+.CONN   { background: rgba(245,158,11,.14); color: #fcd34d; }
+.PIECE  { background: rgba(124,58,237,.18); color: var(--violet2); }
+.log-msg { color: var(--muted); font-size: 12px; }
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer {
+  background: rgba(9,16,30,.9);
+  border-top: 1px solid var(--border);
+  padding: 14px 32px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: relative; z-index: 1;
+}
+.footer-left { display: flex; align-items: center; gap: 14px; }
+.footer-logo {
+  background: #fff; border-radius: 6px;
+  padding: 4px 10px; height: 32px;
+  display: flex; align-items: center;
+}
+.footer-logo img { height: 18px; width: auto; object-fit: contain; display: block; }
+.footer-text { font-size: 11px; color: var(--subtle); }
+.footer-text strong { color: rgba(255,255,255,.4); }
+.footer-right {
+  font-size: 11px; color: var(--subtle);
+  font-family: var(--f-mono); letter-spacing: .03em;
+}
+
+/* ═══════════════════════════════════════════
+   SCROLLBAR
+═══════════════════════════════════════════ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--surface); }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,.08); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.15); }
+
+/* ═══════════════════════════════════════════
+   AUTH OVERLAY
+═══════════════════════════════════════════ */
+#authOverlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+}
+#authOverlay.hidden { display: none; }
+
+/* ═══════════════════════════════════════════
+   DAY MODE
+═══════════════════════════════════════════ */
+body.day-mode {
+  --bg:      #f0f4fa;
+  --surface: #ffffff;
+  --card:    #ffffff;
+  --card2:   #f8fafc;
+  --border:  rgba(0,0,0,.07);
+  --border2: rgba(0,0,0,.12);
+  --border3: rgba(0,0,0,.18);
+  --text:    #0f172a;
+  --text2:   #1e293b;
+  --muted:   #475569;
+  --subtle:  #94a3b8;
+  --glow-b:  rgba(37,99,235,.12);
+  --glow-g:  rgba(16,185,129,.12);
+  --glow-r:  rgba(239,68,68,.12);
+}
+body.day-mode::before {
+  background:
+    radial-gradient(ellipse 80% 60% at 10% 20%, rgba(37,99,235,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 80%, rgba(8,145,178,.03) 0%, transparent 55%);
+}
+body.day-mode::after {
+  background-image:
+    linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+}
+body.day-mode .topbar { background: rgba(248,250,252,.92); }
+body.day-mode .subbar { background: rgba(240,244,250,.95); }
+body.day-mode .conn-badge { border-color: rgba(0,0,0,.1); background: rgba(0,0,0,.04); color: #475569; }
+body.day-mode .conn-badge.live { border-color: rgba(16,185,129,.3); background: rgba(16,185,129,.08); color: #059669; }
+body.day-mode .top-time { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.07); color: #334155; }
+body.day-mode .brand-name { color: #0f172a; }
+body.day-mode .brand-sub { color: #64748b; }
+body.day-mode .brand-divider { background: rgba(0,0,0,.12); }
+body.day-mode .theme-btn { background: rgba(0,0,0,.05); border-color: rgba(0,0,0,.1); color: #475569; }
+body.day-mode .theme-btn:hover { background: rgba(0,0,0,.09); color: #0f172a; }
+body.day-mode .user-badge { background: rgba(0,0,0,.04); border-color: rgba(0,0,0,.1); }
+body.day-mode .user-badge:hover { background: rgba(0,0,0,.08); }
+body.day-mode .user-name { color: #0f172a; }
+body.day-mode .user-role { color: #64748b; }
+body.day-mode .user-dropdown { background: #ffffff; border-color: rgba(0,0,0,.1); box-shadow: 0 20px 50px rgba(0,0,0,.12); }
+body.day-mode .dd-item { color: #475569; }
+body.day-mode .dd-item:hover { background: rgba(0,0,0,.05); color: #0f172a; }
+body.day-mode .dh-name { color: #0f172a; }
+body.day-mode .dh-email { color: #64748b; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ═══════════════════════════════════════════
+   ONGLETS NAVIGATION
+═══════════════════════════════════════════ */
+.nav-tabs {
+  display: flex; gap: 6px;
+  padding: 10px 32px 0;
+  background: rgba(11,20,36,.9);
+  border-bottom: 1px solid var(--border);
+  position: relative; z-index: 1;
+}
+.nav-tab {
+  padding: 9px 20px; border-radius: var(--r-sm) var(--r-sm) 0 0;
+  font-size: 12px; font-weight: 600; color: var(--muted);
+  cursor: pointer; border: 1px solid transparent;
+  border-bottom: none; transition: all .2s;
+  font-family: var(--f-body); letter-spacing: .01em;
+  user-select: none; position: relative; bottom: -1px;
+}
+.nav-tab:hover { background: rgba(255,255,255,.05); color: var(--text2); }
+.nav-tab.active {
+  background: var(--bg); color: var(--text);
+  border-color: var(--border2); border-bottom-color: var(--bg);
+}
+.nav-tab .tab-count {
+  display: inline-flex; align-items: center; justify-content: center;
+  background: rgba(37,99,235,.25); color: var(--blue3);
+  border-radius: 10px; padding: 1px 7px;
+  font-size: 10px; margin-left: 6px;
+}
+
+/* Panels */
+.panel { display: none; }
+.panel.active { display: block; }
+
+/* ═══════════════════════════════════════════
+   HISTORIQUE TABLE
+═══════════════════════════════════════════ */
+.hist-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+}
+.hist-toolbar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 16px 20px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap; gap: 12px;
+}
+.hist-title {
+  font-family: var(--f-brand); font-size: 12px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: .1em; color: var(--muted);
+}
+.hist-actions { display: flex; gap: 8px; }
+.hist-btn {
+  display: flex; align-items: center; gap: 6px;
+  padding: 7px 16px; border-radius: var(--r-sm);
+  font-size: 11px; font-weight: 600; cursor: pointer;
+  border: 1px solid var(--border2);
+  background: rgba(255,255,255,.04); color: var(--muted);
+  font-family: var(--f-body); transition: all .2s; letter-spacing: .01em;
+}
+.hist-btn:hover { background: rgba(255,255,255,.09); color: var(--text2); }
+.hist-btn.primary {
+  background: rgba(37,99,235,.15);
+  border-color: rgba(37,99,235,.3); color: var(--blue3);
+}
+.hist-btn.primary:hover { background: rgba(37,99,235,.25); color: #fff; }
+.hist-btn.danger {
+  background: rgba(239,68,68,.1);
+  border-color: rgba(239,68,68,.25); color: var(--red2);
+}
+.hist-btn.danger:hover { background: rgba(239,68,68,.2); }
+
+.hist-filters {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 20px; border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.hist-filter-label { font-size: 11px; color: var(--muted); }
+.hist-select {
+  background: rgba(255,255,255,.05); border: 1px solid var(--border2);
+  color: var(--text2); border-radius: var(--r-sm);
+  padding: 5px 10px; font-size: 11px; font-family: var(--f-body);
+  cursor: pointer; outline: none;
+}
+.hist-select option { background: var(--card); }
+
+.hist-table-wrap { overflow-x: auto; max-height: 520px; overflow-y: auto; }
+.hist-table {
+  width: 100%; border-collapse: collapse;
+  font-size: 12px; font-family: var(--f-mono);
+}
+.hist-table thead th {
+  position: sticky; top: 0;
+  background: var(--card2); color: var(--muted);
+  padding: 10px 14px; text-align: left;
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .08em;
+  border-bottom: 1px solid var(--border2); white-space: nowrap;
+}
+.hist-table tbody tr {
+  border-bottom: 1px solid var(--border);
+  transition: background .15s;
+}
+.hist-table tbody tr:hover { background: rgba(255,255,255,.03); }
+.hist-table tbody td { padding: 9px 14px; color: var(--text2); white-space: nowrap; }
+.hist-table .td-time { color: var(--subtle); font-size: 11px; }
+.hist-table .td-ok  { color: var(--green2); }
+.hist-table .td-bad { color: #fca5a5; }
+.hist-table .td-neu { color: var(--muted); }
+.hist-table .td-alert-on  {
+  background: rgba(239,68,68,.08); color: #fca5a5;
+  font-weight: 700;
+}
+.hist-empty {
+  text-align: center; padding: 60px 20px;
+  color: var(--subtle); font-family: var(--f-body); font-size: 13px;
+}
+
+/* Stats cards dans historique */
+.hist-stats {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  padding: 20px;
+}
+@media (max-width: 800px) { .hist-stats { grid-template-columns: repeat(2, 1fr); } }
+.hs-card {
+  background: var(--card2); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 14px 18px;
+}
+.hs-label { font-size: 10px; color: var(--subtle); text-transform: uppercase; letter-spacing: .08em; font-family: var(--f-brand); margin-bottom: 6px; }
+.hs-val { font-family: var(--f-brand); font-size: 26px; font-weight: 700; color: #fff; }
+.hs-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+/* Notification enregistrement */
+.save-toast {
+  position: fixed; bottom: 24px; right: 24px; z-index: 9000;
+  background: var(--card); border: 1px solid rgba(16,185,129,.3);
+  border-radius: var(--r-md); padding: 12px 20px;
+  display: flex; align-items: center; gap: 10px;
+  font-size: 12px; font-weight: 600; color: var(--green2);
+  box-shadow: 0 12px 40px rgba(0,0,0,.5);
+  transform: translateX(120%); transition: transform .35s cubic-bezier(.34,1.56,.64,1);
+}
+.save-toast.show { transform: none; }
+
+/* ═══════════════════════════════════════════
+   ALERTE VOCALE — PANNEAU DE CONTRÔLE
+═══════════════════════════════════════════ */
+.voice-fab {
+  position: fixed; bottom: 24px; left: 24px; z-index: 8000;
+  display: flex; align-items: center; gap: 10px;
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: 32px; padding: 10px 18px 10px 12px;
+  box-shadow: 0 8px 32px rgba(0,0,0,.5);
+  cursor: pointer; transition: all .2s; user-select: none;
+}
+.voice-fab:hover { background: var(--card2); border-color: var(--border3); }
+.voice-fab.active {
+  border-color: rgba(16,185,129,.4);
+  background: rgba(16,185,129,.08);
+}
+.voice-fab.alerting {
+  border-color: rgba(239,68,68,.5);
+  background: rgba(239,68,68,.1);
+  animation: voice-pulse 1s ease-in-out infinite;
+}
+@keyframes voice-pulse {
+  0%,100% { box-shadow: 0 8px 32px rgba(0,0,0,.5); }
+  50% { box-shadow: 0 8px 40px rgba(239,68,68,.35), 0 0 60px rgba(239,68,68,.15); }
+}
+.voice-icon {
+  width: 36px; height: 36px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0;
+  background: rgba(255,255,255,.06); border: 1px solid var(--border2);
+  transition: all .3s;
+}
+.voice-fab.active .voice-icon {
+  background: rgba(16,185,129,.15); border-color: rgba(16,185,129,.3);
+}
+.voice-fab.alerting .voice-icon {
+  background: rgba(239,68,68,.2); border-color: rgba(239,68,68,.4);
+}
+.voice-label { font-size: 12px; font-weight: 600; color: var(--muted); line-height: 1.3; }
+.voice-label .vl-status { font-size: 10px; color: var(--subtle); display: block; margin-top: 2px; }
+.voice-fab.active .voice-label { color: var(--green2); }
+.voice-fab.active .voice-label .vl-status { color: rgba(52,211,153,.6); }
+.voice-fab.alerting .voice-label { color: #fca5a5; }
+
+/* Soundwave animation */
+.voice-waves {
+  display: none; align-items: center; gap: 2px; height: 20px;
+}
+.voice-fab.alerting .voice-waves { display: flex; }
+.voice-fab.alerting .voice-icon-txt { display: none; }
+.voice-wave {
+  width: 3px; border-radius: 2px; background: #fca5a5;
+  animation: wave-bar .8s ease-in-out infinite;
+}
+.voice-wave:nth-child(1) { animation-delay: 0s;    height: 6px; }
+.voice-wave:nth-child(2) { animation-delay: .1s;   height: 14px; }
+.voice-wave:nth-child(3) { animation-delay: .2s;   height: 10px; }
+.voice-wave:nth-child(4) { animation-delay: .3s;   height: 18px; }
+.voice-wave:nth-child(5) { animation-delay: .15s;  height: 8px; }
+@keyframes wave-bar {
+  0%,100% { transform: scaleY(.4); opacity: .5; }
+  50% { transform: scaleY(1); opacity: 1; }
+}
+
+/* Modal paramètres voix */
+.voice-modal-overlay {
+  display: none; position: fixed; inset: 0; z-index: 9500;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(6px);
+  align-items: center; justify-content: center;
+}
+.voice-modal-overlay.open { display: flex; animation: ddIn .2s ease; }
+.voice-modal {
+  background: var(--card); border: 1px solid var(--border2);
+  border-radius: var(--r-xl); padding: 0;
+  width: 440px; max-width: 94vw;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7);
+  overflow: hidden;
+}
+.vm-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 24px; border-bottom: 1px solid var(--border);
+  background: linear-gradient(135deg, rgba(37,99,235,.08), rgba(8,145,178,.06));
+}
+.vm-title {
+  font-family: var(--f-brand); font-size: 16px; font-weight: 700;
+  color: #fff; letter-spacing: .02em;
+}
+.vm-close {
+  width: 30px; height: 30px; border-radius: 50%;
+  background: rgba(255,255,255,.06); border: 1px solid var(--border2);
+  color: var(--muted); cursor: pointer; font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .2s;
+}
+.vm-close:hover { background: rgba(239,68,68,.15); color: #fca5a5; border-color: rgba(239,68,68,.3); }
+.vm-body { padding: 22px 24px; display: flex; flex-direction: column; gap: 18px; }
+.vm-row { display: flex; flex-direction: column; gap: 8px; }
+.vm-label {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--muted); font-family: var(--f-brand);
+}
+.vm-desc { font-size: 11px; color: var(--subtle); }
+.vm-select, .vm-range {
+  width: 100%; background: rgba(255,255,255,.05);
+  border: 1px solid var(--border2); color: var(--text2);
+  border-radius: var(--r-sm); padding: 9px 12px;
+  font-size: 13px; font-family: var(--f-body); outline: none;
+  transition: border-color .2s;
+}
+.vm-select:focus, .vm-range:focus { border-color: var(--blue2); }
+.vm-select option { background: var(--card); }
+.vm-range { padding: 6px 0; accent-color: var(--blue2); cursor: pointer; }
+.vm-range-row { display: flex; align-items: center; gap: 12px; }
+.vm-range-val {
+  font-family: var(--f-mono); font-size: 13px; font-weight: 700;
+  color: var(--blue3); min-width: 36px; text-align: right;
+}
+.vm-toggle-row {
+  display: flex; align-items: center; justify-content: space-between;
+  background: rgba(255,255,255,.03); border: 1px solid var(--border);
+  border-radius: var(--r-md); padding: 12px 16px;
+}
+.vm-toggle-info .vm-toggle-name { font-size: 13px; font-weight: 600; color: var(--text2); }
+.vm-toggle-info .vm-toggle-sub  { font-size: 11px; color: var(--subtle); margin-top: 2px; }
+.toggle-switch {
+  position: relative; width: 44px; height: 24px; flex-shrink: 0;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0; border-radius: 12px;
+  background: rgba(255,255,255,.1); border: 1px solid var(--border2);
+  cursor: pointer; transition: all .3s;
+}
+.toggle-slider::before {
+  content: ''; position: absolute;
+  width: 18px; height: 18px; border-radius: 50%;
+  left: 2px; top: 2px; background: var(--muted);
+  transition: all .3s;
+}
+.toggle-switch input:checked + .toggle-slider { background: rgba(16,185,129,.3); border-color: rgba(16,185,129,.5); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(20px); background: var(--green2); box-shadow: 0 0 8px rgba(16,185,129,.5); }
+.vm-footer {
+  padding: 16px 24px; border-top: 1px solid var(--border);
+  display: flex; gap: 10px; justify-content: flex-end;
+}
+.vm-btn {
+  padding: 9px 20px; border-radius: var(--r-sm);
+  font-size: 12px; font-weight: 700; cursor: pointer;
+  font-family: var(--f-body); border: 1px solid var(--border2);
+  transition: all .2s; letter-spacing: .02em;
+}
+.vm-btn.secondary { background: rgba(255,255,255,.05); color: var(--muted); }
+.vm-btn.secondary:hover { background: rgba(255,255,255,.1); color: var(--text2); }
+.vm-btn.test {
+  background: rgba(245,158,11,.12); border-color: rgba(245,158,11,.3);
+  color: #fcd34d;
+}
+.vm-btn.test:hover { background: rgba(245,158,11,.22); }
+.vm-btn.enable {
+  background: linear-gradient(135deg, var(--blue), var(--teal));
+  border-color: transparent; color: #fff;
+}
+.vm-btn.enable:hover { opacity: .9; }
+</style>
+</head>
+<body>
+
+<div id="authOverlay">
+  <div style="text-align:center">
+    <div style="width:48px;height:48px;border:3px solid rgba(37,99,235,.25);border-top-color:#2563eb;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 16px"></div>
+    <div style="font-size:13px;color:#6b85b0;font-family:'DM Sans',sans-serif">Vérification de la session...</div>
+  </div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="brand">
+    <div class="logo-pill">
+      <img src="data:image/jpeg;base64,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" alt="SEBN.TN">
+    </div>
+    <div class="brand-divider"></div>
+    <div class="brand-text">
+      <div class="brand-name">Surveillance IoT — Deray Shuttle 2.0</div>
+      <div class="brand-sub">DS18B20 · ACS712 · SW-420 · TCRT5000 · ESP32 · MQTT</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="conn-badge" id="connBadge">
+      <div class="conn-dot" id="connDot"></div>
+      <span id="connTxt">Connexion...</span>
+    </div>
+    <div class="top-time" id="topTime">--:--:--</div>
+    <button class="theme-btn" id="themeBtn" onclick="toggleTheme()">
+      <span class="theme-icon" id="themeIcon">🌙</span>
+      <span id="themeTxt">Mode jour</span>
+    </button>
+    <div class="user-badge" id="userBadge" onclick="toggleDD()">
+      <div class="user-avatar" id="userAvatar">?</div>
+      <div>
+        <div class="user-name" id="userNameTxt">—</div>
+        <div class="user-role" id="userRoleTxt">—</div>
+      </div>
+      <div class="user-chevron">▾</div>
+      <div class="user-dropdown" id="userDropdown">
+        <div class="dd-header">
+          <div class="dh-name" id="ddName">—</div>
+          <div class="dh-email" id="ddEmail">—</div>
+        </div>
+        <div class="dd-item" onclick="goProfile()"><span class="dd-icon">👤</span> Mon profil</div>
+        <div class="dd-item" onclick="goSettings()"><span class="dd-icon">⚙</span> Paramètres</div>
+        <div class="dd-item danger" onclick="doLogout()"><span class="dd-icon">🚪</span> Se déconnecter</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUBBAR -->
+<div class="subbar">
+  <div class="subbar-left">
+    <span class="badge-iot">IOT</span>
+    <span class="subbar-title">Projet fin d'études Master — Surveillance industrielle temps réel</span>
+  </div>
+  <div class="subbar-right">
+    <span>SEBN.TN</span>
+    <span>broker.hivemq.com</span>
+    <span>nadine/machine/#</span>
+  </div>
+</div>
+
+<!-- NAV TABS -->
+<div class="nav-tabs">
+  <div class="nav-tab active" id="tab-live" onclick="switchTab('live')">📡 Temps réel</div>
+  <div class="nav-tab" id="tab-hist" onclick="switchTab('hist')">🗃 Historique <span class="tab-count" id="histCount">0</span></div>
+</div>
+
+<!-- PANEL TEMPS RÉEL -->
+<div id="panel-live" class="panel active">
+<div class="page">
+
+  <!-- STATUT -->
+  <div class="section-label">Statut système</div>
+  <div class="stat-banner ok" id="statBanner">
+    <div class="banner-icon" id="bannerIcon">✓</div>
+    <div class="banner-body">
+      <div class="banner-title" id="bannerTitle">Fonctionnement normal</div>
+      <div class="banner-sub" id="bannerSub">Tous les capteurs dans la plage — LED rouge éteinte sur l'ESP32</div>
+      <div class="banner-raison" id="bannerRaison"></div>
+    </div>
+    <div class="banner-stats">
+      <div class="bstat">
+        <div class="bstat-val" id="bsAlerts">0</div>
+        <div class="bstat-lbl">Alertes</div>
+      </div>
+      <div class="bstat">
+        <div class="bstat-val" id="bsPieces">0</div>
+        <div class="bstat-lbl">Pièces</div>
+      </div>
+    </div>
+    <div class="led-group">
+      <div class="led-orb r-off" id="ledOrb">OFF</div>
+      <div class="led-label">LED rouge</div>
+    </div>
+  </div>
+
+  <!-- KPI -->
+  <div class="section-label">Capteurs en temps réel</div>
+  <div class="kpi-grid">
+
+    <div class="kcard blue" id="kT">
+      <div class="kcard-bg-icon">🌡</div>
+      <div class="klabel"><div class="klabel-dot" style="background:#3b82f6"></div>Température · DS18B20</div>
+      <div class="kvalue-row">
+        <div class="kvalue" id="vT">—</div>
+        <div class="kunit">°C</div>
+      </div>
+      <div class="kbar"><div class="kbar-fill" id="bT" style="width:0%;background:linear-gradient(90deg,#2563eb,#60a5fa)"></div></div>
+      <div class="ksub"><div class="ksub-dot" id="dT"></div><span id="sT">En attente de l'ESP32...</span></div>
+    </div>
+
+    <div class="kcard teal" id="kC">
+      <div class="kcard-bg-icon">⚡</div>
+      <div class="klabel"><div class="klabel-dot" style="background:#0891b2"></div>Courant · ACS712</div>
+      <div class="kvalue-row">
+        <div class="kvalue" id="vC">—</div>
+        <div class="kunit">A</div>
+      </div>
+      <div class="kbar"><div class="kbar-fill" id="bC" style="width:0%;background:linear-gradient(90deg,#0891b2,#22d3ee)"></div></div>
+      <div class="ksub"><div class="ksub-dot" id="dC"></div><span id="sC">En attente de l'ESP32...</span></div>
+    </div>
+
+    <div class="kcard violet" id="kV">
+      <div class="kcard-bg-icon">📳</div>
+      <div class="klabel"><div class="klabel-dot" style="background:#7c3aed"></div>Vibration · SW-420</div>
+      <div class="vib-badge ok" id="vibBadge">● Stable</div>
+      <div class="ksub" style="margin-top:12px"><div class="ksub-dot" id="dV"></div><span id="sV">Aucune vibration anormale</span></div>
+    </div>
+
+    <div class="kcard rose">
+      <div class="kcard-bg-icon">⚙</div>
+      <div class="klabel"><div class="klabel-dot" style="background:#e11d48"></div>Pièces produites · TCRT5000</div>
+      <div class="kvalue-row">
+        <div class="kvalue" id="vPc" style="color:#fb7185">0</div>
+        <div class="kunit">pcs</div>
+      </div>
+      <div class="kbar"><div class="kbar-fill" id="bPc" style="width:0%;background:linear-gradient(90deg,#e11d48,#fb7185)"></div></div>
+      <div class="ksub"><div class="ksub-dot" style="background:#e11d48"></div><span id="sPc">Compteur infrarouge actif</span></div>
+    </div>
+
+    <div class="kcard emerald" id="kBMP">
+      <div class="kcard-bg-icon">💨</div>
+      <div class="klabel"><div class="klabel-dot" style="background:#059669"></div>Pression · BMP280</div>
+      <div class="kvalue-row">
+        <div class="kvalue" id="vBMP">—</div>
+        <div class="kunit">hPa</div>
+      </div>
+      <div class="kbar"><div class="kbar-fill" id="bBMP" style="width:0%;background:linear-gradient(90deg,#059669,#34d399)"></div></div>
+      <div class="ksub"><div class="ksub-dot" id="dBMP"></div><span id="sBMP">En attente de l'ESP32...</span></div>
+    </div>
+
+  </div>
+
+  <!-- MILIEU -->
+  <div class="mid-row">
+    <div class="card">
+      <div class="card-title">Température ambiante — Limite officielle 10–45°C</div>
+      <div class="gauge-zones">
+        <div class="gz ok" style="flex:4">Ambiante 10–40°C</div>
+        <div class="gz hot" style="flex:1">&gt; 40°C</div>
+      </div>
+      <div class="gauge-track">
+        <div class="gauge-fill" id="gFill" style="width:0%;background:#3b82f6"></div>
+        <div class="gauge-cursor" id="gCursor"></div>
+      </div>
+      <div class="gauge-ticks">
+        <span>0°C</span><span>10°C</span><span>20°C</span>
+        <span>30°C</span><span>40°C</span><span>50°C</span>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Récapitulatif capteurs</div>
+      <table class="recap-table">
+        <tr><td class="rt-label"><span class="rt-chip">DS18B20</span>Température</td><td class="rt-val neu" id="rT">—</td></tr>
+        <tr><td class="rt-label"><span class="rt-chip">ACS712</span>Courant</td><td class="rt-val neu" id="rC">—</td></tr>
+        <tr><td class="rt-label"><span class="rt-chip">SW-420</span>Vibration</td><td class="rt-val neu" id="rV">—</td></tr>
+        <tr><td class="rt-label"><span class="rt-chip">TCRT5000</span>Pièces</td><td class="rt-val neu" id="rPc">—</td></tr>
+        <tr><td class="rt-label"><span class="rt-chip">LED</span>LED rouge</td><td class="rt-val neu" id="rLed">—</td></tr>
+        <tr><td class="rt-label"><span class="rt-chip">BMP280</span>Pression</td><td class="rt-val neu" id="rBMP">—</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- GRAPHE -->
+  <div class="chart-card">
+    <div class="chart-head">
+      <div class="chart-title">Historique température — 60 dernières mesures</div>
+      <div class="chart-pills">
+        <div class="cpill" id="cpPts">0 points</div>
+        <div class="cpill" id="cpMM">min — · max —</div>
+        <div class="cpill" id="cpAvg">moy —</div>
+      </div>
+    </div>
+    <div class="chart-wrap">
+      <svg class="spark" id="sparkSvg" viewBox="0 0 1000 120" preserveAspectRatio="none">
+        <rect x="0" y="24" width="1000" height="96" fill="rgba(16,185,129,.04)" />
+        <line x1="0" y1="24" x2="1000" y2="24"
+              stroke="rgba(239,68,68,.35)" stroke-width="1"
+              stroke-dasharray="8 5"/>
+        <text x="8" y="20" font-size="11" fill="rgba(239,68,68,.55)" font-weight="600">30°C</text>
+        <polyline id="spFill" points="" fill="rgba(59,130,246,.07)" stroke="none"/>
+        <polyline id="spLine" points="" fill="none"
+                  stroke="url(#lineGrad)" stroke-width="2.5"
+                  stroke-linejoin="round" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stop-color="#7c3aed"/>
+            <stop offset="50%"  stop-color="#2563eb"/>
+            <stop offset="100%" stop-color="#0891b2"/>
+          </linearGradient>
+        </defs>
+        <g id="spDot"></g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- LOG -->
+  <div class="log-card">
+    <div class="log-head">
+      <div class="card-title" style="margin:0">Journal des événements</div>
+      <button class="log-clear-btn" onclick="clrLog()">Effacer le journal</button>
+    </div>
+    <div class="log-body" id="logBody"></div>
+  </div>
+
+</div>
+</div><!-- /panel-live -->
+
+<!-- PANEL HISTORIQUE -->
+<div id="panel-hist" class="panel">
+<div class="page">
+
+  <div class="section-label">Statistiques globales</div>
+  <div class="hist-stats">
+    <div class="hs-card">
+      <div class="hs-label">Mesures enregistrées</div>
+      <div class="hs-val" id="statTotal">0</div>
+      <div class="hs-sub">depuis le démarrage</div>
+    </div>
+    <div class="hs-card">
+      <div class="hs-label">Alertes totales</div>
+      <div class="hs-val" id="statAlerts" style="color:#fca5a5">0</div>
+      <div class="hs-sub">anomalies détectées</div>
+    </div>
+    <div class="hs-card">
+      <div class="hs-label">Temp. moyenne</div>
+      <div class="hs-val" id="statTempAvg">—</div>
+      <div class="hs-sub">°C (session)</div>
+    </div>
+    <div class="hs-card">
+      <div class="hs-label">Pièces produites</div>
+      <div class="hs-val" id="statPieces" style="color:#fb7185">0</div>
+      <div class="hs-sub">total cumulé</div>
+    </div>
+  </div>
+
+  <div class="section-label">Journal des mesures</div>
+  <div class="hist-card">
+    <div class="hist-toolbar">
+      <div class="hist-title">Historique des capteurs — stockage local</div>
+      <div class="hist-actions">
+        <button class="hist-btn primary" onclick="exportCSV()">⬇ Exporter CSV</button>
+        <button class="hist-btn" onclick="refreshHistTable()">↻ Rafraîchir</button>
+        <button class="hist-btn danger" onclick="clearHistory()">🗑 Effacer</button>
+      </div>
+    </div>
+    <div class="hist-filters">
+      <span class="hist-filter-label">Filtrer :</span>
+      <select class="hist-select" id="filterType" onchange="refreshHistTable()">
+        <option value="all">Tous les capteurs</option>
+        <option value="temp">Température</option>
+        <option value="courant">Courant</option>
+        <option value="vibration">Vibration</option>
+        <option value="pression">Pression</option>
+        <option value="pieces">Pièces</option>
+        <option value="alert">Alertes</option>
+      </select>
+      <select class="hist-select" id="filterLimit" onchange="refreshHistTable()">
+        <option value="100">100 dernières</option>
+        <option value="500">500 dernières</option>
+        <option value="1000">1000 dernières</option>
+        <option value="0">Toutes</option>
+      </select>
+    </div>
+    <div class="hist-table-wrap">
+      <table class="hist-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Horodatage</th>
+            <th>Capteur</th>
+            <th>Valeur</th>
+            <th>Unité</th>
+            <th>Statut</th>
+          </tr>
+        </thead>
+        <tbody id="histTableBody">
+          <tr><td colspan="6" class="hist-empty">Aucune donnée enregistrée</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>
+</div><!-- /panel-hist -->
+
+<!-- TOAST -->
+<div class="save-toast" id="saveToast">💾 Données enregistrées</div>
+
+<!-- ALERTE VOCALE FAB -->
+<div class="voice-fab" id="voiceFab" onclick="openVoiceModal()">
+  <div class="voice-icon">
+    <span class="voice-icon-txt" id="voiceIconTxt">🔇</span>
+    <div class="voice-waves">
+      <div class="voice-wave"></div><div class="voice-wave"></div>
+      <div class="voice-wave"></div><div class="voice-wave"></div>
+      <div class="voice-wave"></div>
+    </div>
+  </div>
+  <div class="voice-label">
+    Alerte vocale
+    <span class="vl-status" id="voiceStatusTxt">Désactivée</span>
+  </div>
+</div>
+
+<!-- MODAL PARAMÈTRES VOIX -->
+<div class="voice-modal-overlay" id="voiceModalOverlay" onclick="closeVoiceModal(event)">
+  <div class="voice-modal" onclick="event.stopPropagation()">
+    <div class="vm-header">
+      <div class="vm-title">🔊 Alerte vocale</div>
+      <div class="vm-close" onclick="closeVoiceModal()">✕</div>
+    </div>
+    <div class="vm-body">
+
+      <div class="vm-toggle-row">
+        <div class="vm-toggle-info">
+          <div class="vm-toggle-name">Activer les alertes vocales</div>
+          <div class="vm-toggle-sub">Annonce audio lors de chaque anomalie ESP32</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="voiceEnabled" onchange="toggleVoice()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="vm-toggle-row">
+        <div class="vm-toggle-info">
+          <div class="vm-toggle-name">Alerte retour normal</div>
+          <div class="vm-toggle-sub">Annoncer aussi quand le système revient à la normale</div>
+        </div>
+        <label class="toggle-switch">
+          <input type="checkbox" id="voiceNormal" checked>
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <div class="vm-row">
+        <div class="vm-label">Langue / Voix</div>
+        <select class="vm-select" id="voiceLang" onchange="updateVoiceList()">
+          <option value="fr-FR">Français (France)</option>
+          <option value="ar-TN">Arabe (Tunisie)</option>
+          <option value="ar-SA">Arabe (Standard)</option>
+          <option value="en-US">English (US)</option>
+          <option value="en-GB">English (UK)</option>
+        </select>
+      </div>
+
+      <div class="vm-row">
+        <div class="vm-label">Voix disponible</div>
+        <select class="vm-select" id="voiceSelect"></select>
+      </div>
+
+      <div class="vm-row">
+        <div class="vm-label">Volume</div>
+        <div class="vm-range-row">
+          <input type="range" class="vm-range" id="voiceVolume" min="0" max="1" step="0.1" value="1" oninput="document.getElementById('voiceVolVal').textContent=Math.round(this.value*100)+'%'">
+          <span class="vm-range-val" id="voiceVolVal">100%</span>
+        </div>
+      </div>
+
+      <div class="vm-row">
+        <div class="vm-label">Vitesse de lecture</div>
+        <div class="vm-range-row">
+          <input type="range" class="vm-range" id="voiceRate" min="0.5" max="2" step="0.1" value="1" oninput="document.getElementById('voiceRateVal').textContent=this.value+'×'">
+          <span class="vm-range-val" id="voiceRateVal">1×</span>
+        </div>
+      </div>
+
+      <div class="vm-row">
+        <div class="vm-label">Message personnalisé (anomalie)</div>
+        <input type="text" class="vm-select" id="voiceMsg"
+          value="Attention ! Anomalie détectée sur la machine Deray Shuttle. Intervention requise immédiatement."
+          placeholder="Message à prononcer...">
+        <div class="vm-desc">Vous pouvez inclure {raison} pour insérer la cause détectée par l'ESP32.</div>
+      </div>
+
+    </div>
+    <div class="vm-footer">
+      <button class="vm-btn secondary" onclick="closeVoiceModal()">Fermer</button>
+      <button class="vm-btn test" onclick="testVoice()">▶ Tester</button>
+      <button class="vm-btn enable" onclick="saveVoiceSettings()">Appliquer</button>
+    </div>
+  </div>
+</div>
+<footer>
+  <div class="footer-left">
+    <div class="footer-logo"><img src="data:image/jpeg;base64,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" alt="SEBN.TN"></div>
+    <div class="footer-text"><strong>SEBN.TN</strong> — Dashboard IoT Industriel &copy; 2024</div>
+  </div>
+  <div class="footer-right" id="footerTs">—</div>
+</footer>
+
+<script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+<script>
+
+/* ══════════════════════════════════════════════════════════
+   STATE
+══════════════════════════════════════════════════════════ */
+var tempHistory = [], totalAlerts = 0, lastAlert = null, lastRaison = '';
+var MAX_PTS = 60;
+
+/* ══════════════════════════════════════════════════════════
+   UTILS
+══════════════════════════════════════════════════════════ */
+function now() {
+  return new Date().toLocaleTimeString('fr-FR',
+    { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+}
+function today() {
+  return new Date().toLocaleDateString('fr-FR',
+    { weekday:'short', day:'2-digit', month:'short', year:'numeric' });
+}
+
+/* Horloge temps réel */
+setInterval(function() {
+  document.getElementById('topTime').textContent = now();
+}, 1000);
+document.getElementById('topTime').textContent = now();
+
+/* ══════════════════════════════════════════════════════════
+   JOURNAL
+══════════════════════════════════════════════════════════ */
+function addLog(type, msg) {
+  var body = document.getElementById('logBody');
+  var row  = document.createElement('div');
+  row.className = 'log-row';
+  row.innerHTML =
+    '<span class="log-ts">' + now() + '</span>' +
+    '<span class="log-badge ' + type + '">' + type + '</span>' +
+    '<span class="log-msg">' + msg + '</span>';
+  body.insertBefore(row, body.firstChild);
+  while (body.children.length > 20) body.removeChild(body.lastChild);
+}
+function clrLog() {
+  document.getElementById('logBody').innerHTML = '';
+  addLog('INFO', 'Journal effacé');
+}
+
+/* ══════════════════════════════════════════════════════════
+   CONNEXION
+══════════════════════════════════════════════════════════ */
+function setConn(ok) {
+  var dot   = document.getElementById('connDot');
+  var txt   = document.getElementById('connTxt');
+  var badge = document.getElementById('connBadge');
+  dot.className   = 'conn-dot' + (ok ? ' on' : '');
+  txt.textContent = ok ? 'Connecté — HiveMQ' : 'Déconnecté';
+  badge.className = 'conn-badge' + (ok ? ' live' : '');
+}
+
+/* ══════════════════════════════════════════════════════════
+   TEMPÉRATURE
+══════════════════════════════════════════════════════════ */
+function doTemp(v) {
+  var t = parseFloat(v); if (isNaN(t)) return;
+  var ok  = (t >= 10 && t <= 40);
+  var pct = Math.min(100, Math.max(0, (t / 50) * 100));
+  var col = ok ? '#10b981' : '#ef4444';
+
+  document.getElementById('vT').textContent = t.toFixed(1);
+  document.getElementById('vT').style.color = ok ? '#fff' : '#fca5a5';
+  document.getElementById('bT').style.cssText =
+    'width:' + pct + '%;background:' + (ok ? '#3b82f6' : '#ef4444');
+  document.getElementById('sT').textContent =
+    ok ? 'Ambiante normale (10–40°C)' : (t < 10 ? 'Trop froid < 10°C' : 'Trop chaud > 40°C');
+  document.getElementById('dT').className = 'ksub-dot' + (ok ? '' : ' bad');
+  document.getElementById('kT').className = 'kcard blue' + (ok ? '' : ' warn');
+
+  /* Gauge */
+  document.getElementById('gFill').style.cssText =
+    'width:' + pct + '%;background:' + (ok ? 'rgba(59,130,246,.5)' : 'rgba(239,68,68,.6)');
+  document.getElementById('gCursor').style.cssText =
+    'left:' + Math.min(96, Math.max(4, pct)) + '%;background:' +
+    (ok ? '#3b82f6' : '#ef4444') +
+    ';box-shadow:0 0 10px ' + (ok ? '#3b82f6' : '#ef4444') + ',0 0 0 2px ' + (ok ? '#3b82f6' : '#ef4444');
+
+  /* Recap */
+  document.getElementById('rT').textContent = t.toFixed(1) + ' °C';
+  document.getElementById('rT').className   = 'rt-val ' + (ok ? 'good' : 'bad');
+
+  /* Historique */
+  tempHistory.push(t);
+  if (tempHistory.length > MAX_PTS) tempHistory.shift();
+
+  var n = tempHistory.length;
+  document.getElementById('cpPts').textContent = n + ' point' + (n > 1 ? 's' : '');
+
+  if (n > 1) {
+    var mn = Math.min.apply(null, tempHistory);
+    var mx = Math.max.apply(null, tempHistory);
+    var av = tempHistory.reduce(function(a,b){return a+b;},0) / n;
+    document.getElementById('cpMM').textContent =
+      'min ' + mn.toFixed(1) + ' · max ' + mx.toFixed(1) + '°C';
+    document.getElementById('cpAvg').textContent = 'moy ' + av.toFixed(1) + '°C';
+  }
+
+  updateSpark();
+  /* ENREGISTREMENT */
+  saveRecord('temp', t.toFixed(2), '°C', ok ? 'ok' : 'bad');
+}
+
+/* ══════════════════════════════════════════════════════════
+   SPARKLINE
+══════════════════════════════════════════════════════════ */
+function updateSpark() {
+  var n = tempHistory.length;
+  if (n < 2) return;
+  var W = 1000, H = 120, minT = 0, maxT = 50;
+
+  var pts = tempHistory.map(function(t, i) {
+    var x = (i / (n - 1)) * W;
+    var y = H - ((t - minT) / (maxT - minT)) * H;
+    return x.toFixed(1) + ',' + y.toFixed(1);
+  }).join(' ');
+
+  document.getElementById('spLine').setAttribute('points', pts);
+  document.getElementById('spFill').setAttribute('points',
+    '0,' + H + ' ' + pts + ' ' + W + ',' + H);
+
+  var last = tempHistory[n - 1];
+  var lx = W.toFixed(1);
+  var ly = (H - ((last - minT) / (maxT - minT)) * H).toFixed(1);
+  var ok = last <= 30;
+  var dc = ok ? '#10b981' : '#ef4444';
+  document.getElementById('spDot').innerHTML =
+    '<circle cx="' + lx + '" cy="' + ly + '" r="5" fill="' + dc + '"/>' +
+    '<circle cx="' + lx + '" cy="' + ly + '" r="10" fill="' + dc + '" opacity=".2"/>';
+}
+
+/* ══════════════════════════════════════════════════════════
+   COURANT
+══════════════════════════════════════════════════════════ */
+function doCourant(v) {
+  var c = parseFloat(v); if (isNaN(c)) return;
+  var ok  = c <= 7.8;
+  var pct = Math.min(100, (c / 5) * 100);
+
+  document.getElementById('vC').textContent = c.toFixed(3);
+  document.getElementById('vC').style.color = ok ? '#fff' : '#fca5a5';
+  document.getElementById('bC').style.cssText =
+    'width:' + pct + '%;background:' + (ok ? '#0891b2' : '#ef4444');
+  document.getElementById('sC').textContent =
+    c > 14 ? 'CRITIQUE — fusible 16A !' : c > 7.8 ? 'Surintensité (nominal 7.8A)' : 'Normal (nominal 7.8A)';
+  document.getElementById('dC').className = 'ksub-dot' + (ok ? '' : ' bad');
+  document.getElementById('kC').className = 'kcard teal' + (ok ? '' : ' warn');
+  document.getElementById('rC').textContent = c.toFixed(3) + ' A';
+  document.getElementById('rC').className   = 'rt-val ' + (ok ? 'good' : 'bad');
+  /* ENREGISTREMENT */
+  saveRecord('courant', c.toFixed(3), 'A', ok ? 'ok' : 'bad');
+}
+
+/* ══════════════════════════════════════════════════════════
+   VIBRATION
+══════════════════════════════════════════════════════════ */
+function doVib(v) {
+  var vib = v === '1';
+  var badge = document.getElementById('vibBadge');
+  badge.className   = 'vib-badge ' + (vib ? 'err' : 'ok');
+  badge.textContent = vib ? '● Vibration !' : '● Stable';
+  document.getElementById('sV').textContent =
+    vib ? 'Vibration anormale détectée !' : 'Aucune vibration anormale';
+  document.getElementById('dV').className = 'ksub-dot' + (vib ? ' bad' : '');
+  document.getElementById('kV').className = 'kcard violet' + (vib ? ' warn' : '');
+  document.getElementById('rV').textContent = vib ? 'Détectée' : 'Aucune';
+  document.getElementById('rV').className   = 'rt-val ' + (vib ? 'bad' : 'good');
+  /* ENREGISTREMENT */
+  saveRecord('vibration', vib ? '1' : '0', '', vib ? 'bad' : 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════
+   PIÈCES
+══════════════════════════════════════════════════════════ */
+function doPieces(v) {
+  var n = parseInt(v); if (isNaN(n)) return;
+  var prev = parseInt(document.getElementById('vPc').textContent) || 0;
+  document.getElementById('vPc').textContent = n;
+  document.getElementById('bPc').style.width = Math.min(100, (n % 100)) + '%';
+  document.getElementById('sPc').textContent = n + ' pièce(s) depuis démarrage';
+  document.getElementById('rPc').textContent = n + ' pcs';
+  document.getElementById('rPc').className   = 'rt-val good';
+  document.getElementById('bsPieces').textContent = n;
+  if (n > prev) addLog('PIECE', 'Pièce n°' + n + ' — TCRT5000 GPIO16');
+  /* ENREGISTREMENT */
+  saveRecord('pieces', n, 'pcs', 'ok');
+}
+
+/* ══════════════════════════════════════════════════════════
+   ALERTE
+══════════════════════════════════════════════════════════ */
+function doAlert(v) {
+  var al = v === 'ALERTE';
+
+  if (lastAlert !== v) {
+    if (al) {
+      totalAlerts++;
+      addLog('ALERTE', lastRaison || 'Anomalie détectée sur Deray Shuttle 2.0');
+      /* ENREGISTREMENT ALERTE */
+      saveRecord('alert', lastRaison || 'Anomalie', '', 'alert');
+      /* ALERTE VOCALE */
+      triggerVoiceAlert(true);
+    } else if (lastAlert !== null) {
+      addLog('NORMAL', 'Retour au fonctionnement normal');
+      saveRecord('alert', 'Retour normal', '', 'ok');
+      /* ALERTE VOCALE RETOUR NORMAL */
+      triggerVoiceAlert(false);
+    }
+    lastAlert = v;
+  }
+
+  document.getElementById('bsAlerts').textContent = totalAlerts;
+
+  /* Banner */
+  var banner = document.getElementById('statBanner');
+  var icon   = document.getElementById('bannerIcon');
+  banner.className = 'stat-banner ' + (al ? 'err' : 'ok');
+  icon.textContent = al ? '⚠' : '✓';
+  document.getElementById('bannerTitle').textContent =
+    al ? 'ANOMALIE — Intervention requise !' : 'Fonctionnement normal';
+  document.getElementById('bannerSub').textContent = al
+    ? 'LED rouge allumée sur ESP32 · ' + totalAlerts + ' alerte(s) cette session'
+    : 'LED rouge éteinte — tous les capteurs dans la plage nominale';
+
+  var rbox = document.getElementById('bannerRaison');
+  if (al && lastRaison) {
+    rbox.textContent = '⚠ Cause : ' + lastRaison;
+    rbox.className   = 'banner-raison show';
+  } else {
+    rbox.className = 'banner-raison';
+  }
+
+  /* LED physique */
+  var led = document.getElementById('ledOrb');
+  led.className   = 'led-orb ' + (al ? 'r-on' : 'r-off');
+  led.textContent = al ? 'ON' : 'OFF';
+  document.getElementById('rLed').textContent = al ? 'Allumée' : 'Éteinte';
+  document.getElementById('rLed').className   = 'rt-val ' + (al ? 'bad' : 'good');
+}
+
+/* ══════════════════════════════════════════════════════════
+   MQTT
+══════════════════════════════════════════════════════════ */
+var mqttClient = mqtt.connect('wss://broker.hivemq.com:8884/mqtt', {
+  clientId: 'sebn_dash_' + Math.random().toString(16).slice(2, 10),
+  reconnectPeriod: 3000,
+  connectTimeout: 10000
+});
+
+mqttClient.on('connect', function() {
+  setConn(true);
+  mqttClient.subscribe('nadine/machine/#');
+  addLog('CONN', 'Connecté à broker.hivemq.com · 7 topics souscrits');
+});
+
+mqttClient.on('reconnect', function() {
+  document.getElementById('connTxt').textContent = 'Reconnexion...';
+});
+
+mqttClient.on('close',   function() { setConn(false); });
+mqttClient.on('offline', function() { setConn(false); });
+
+mqttClient.on('message', function(topic, msg) {
+  var v = msg.toString().trim();
+  var t = now();
+  document.getElementById('footerTs').textContent = today() + ' · ' + t;
+
+/* ══ PRESSION BMP280 ══════════════════════════════════════ */
+function doBMP(v) {
+  var p = parseFloat(v); if (isNaN(p)) return;
+  // Pression normale Tunisie : 1000–1020 hPa
+  var ok  = (p >= 950 && p <= 1050);
+  var pct = Math.min(100, Math.max(0, ((p - 900) / 200) * 100));
+  var col = ok ? '#059669' : '#ef4444';
+
+  document.getElementById('vBMP').textContent = p.toFixed(1);
+  document.getElementById('vBMP').style.color  = ok ? '#fff' : '#fca5a5';
+  document.getElementById('bBMP').style.cssText =
+    'width:' + pct + '%;background:' + col;
+  document.getElementById('sBMP').textContent =
+    ok ? 'Pression normale (950–1050 hPa)' : 'Pression anormale !';
+  document.getElementById('dBMP').className = 'ksub-dot' + (ok ? '' : ' bad');
+  document.getElementById('kBMP').className  = 'kcard emerald' + (ok ? '' : ' warn');
+  document.getElementById('rBMP').textContent = p.toFixed(1) + ' hPa';
+  document.getElementById('rBMP').className   = 'rt-val ' + (ok ? 'good' : 'bad');
+  /* ENREGISTREMENT */
+  saveRecord('pression', p.toFixed(1), 'hPa', ok ? 'ok' : 'bad');
+}
+
+  if (topic.endsWith('temp'))       doTemp(v);
+  else if (topic.endsWith('courant'))   doCourant(v);
+  else if (topic.endsWith('vibration')) doVib(v);
+  else if (topic.endsWith('pression'))   doBMP(v);
+  else if (topic.endsWith('pieces'))    doPieces(v);
+  else if (topic.endsWith('raison'))    lastRaison = v;
+  else if (topic.endsWith('alert'))     doAlert(v);
+});
+
+addLog('INFO', 'Dashboard SEBN.TN démarré — en attente des données ESP32');
+
+/* ══════════════════════════════════════════════════════════
+   SYSTÈME D'ENREGISTREMENT
+══════════════════════════════════════════════════════════ */
+var STORAGE_KEY = 'sebn_sensor_history';
+var MAX_RECORDS = 5000; // max entrées localStorage
+var saveDebounce = null;
+var pendingSaves = [];
+
+/* Charger historique */
+function loadHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+  } catch(e) { return []; }
+}
+
+/* Sauvegarder avec debounce (évite écritures trop fréquentes) */
+function saveRecord(type, value, unit, status) {
+  var record = {
+    ts: new Date().toISOString(),
+    date: today(),
+    time: now(),
+    type: type,
+    value: String(value),
+    unit: unit || '',
+    status: status || 'ok'
+  };
+  pendingSaves.push(record);
+  if (saveDebounce) clearTimeout(saveDebounce);
+  saveDebounce = setTimeout(function() {
+    var hist = loadHistory();
+    hist = hist.concat(pendingSaves);
+    pendingSaves = [];
+    if (hist.length > MAX_RECORDS) hist = hist.slice(hist.length - MAX_RECORDS);
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(hist));
+      showToast();
+      updateHistCount(hist.length);
+    } catch(e) {
+      /* localStorage plein — supprimer la moitié ancienne */
+      hist = hist.slice(hist.length / 2);
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(hist)); } catch(e2) {}
+    }
+  }, 500);
+}
+
+/* Toast notification */
+var toastTimer = null;
+function showToast() {
+  var t = document.getElementById('saveToast');
+  t.classList.add('show');
+  if (toastTimer) clearTimeout(toastTimer);
+  toastTimer = setTimeout(function() { t.classList.remove('show'); }, 1800);
+}
+
+/* Mettre à jour le compteur d'onglet */
+function updateHistCount(n) {
+  var el = document.getElementById('histCount');
+  if (el) el.textContent = n >= 1000 ? (n/1000).toFixed(1)+'k' : n;
+  var tot = document.getElementById('statTotal');
+  if (tot) tot.textContent = n;
+}
+
+/* ── Navigation onglets ── */
+function switchTab(tab) {
+  document.querySelectorAll('.panel').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.nav-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.getElementById('panel-' + tab).classList.add('active');
+  document.getElementById('tab-' + tab).classList.add('active');
+  if (tab === 'hist') { refreshHistTable(); updateHistStats(); }
+}
+
+/* ── Remplir tableau historique ── */
+function refreshHistTable() {
+  var hist  = loadHistory();
+  var fType = document.getElementById('filterType')  ? document.getElementById('filterType').value  : 'all';
+  var fLim  = document.getElementById('filterLimit') ? parseInt(document.getElementById('filterLimit').value) : 100;
+
+  if (fType !== 'all') hist = hist.filter(function(r){ return r.type === fType; });
+  if (fLim > 0 && hist.length > fLim) hist = hist.slice(hist.length - fLim);
+
+  hist = hist.slice().reverse(); // plus récent en premier
+
+  var tbody = document.getElementById('histTableBody');
+  if (!hist.length) {
+    tbody.innerHTML = '<tr><td colspan="6" class="hist-empty">Aucune donnée enregistrée pour ce filtre</td></tr>';
+    return;
+  }
+
+  var rows = hist.map(function(r, i) {
+    var stClass = r.status === 'ok' ? 'td-ok' : r.status === 'alert' ? 'td-alert-on' : 'td-bad';
+    var stTxt   = r.status === 'ok' ? '✓ Normal' : r.status === 'alert' ? '⚠ ALERTE' : '✗ Anormal';
+    return '<tr' + (r.status === 'alert' ? ' class="td-alert-on"' : '') + '>' +
+      '<td class="td-time">' + (hist.length - i) + '</td>' +
+      '<td class="td-time">' + r.date + '&nbsp;&nbsp;' + r.time + '</td>' +
+      '<td>' + typeName(r.type) + '</td>' +
+      '<td style="font-weight:700">' + r.value + '</td>' +
+      '<td class="td-neu">' + r.unit + '</td>' +
+      '<td class="' + stClass + '">' + stTxt + '</td>' +
+      '</tr>';
+  }).join('');
+  tbody.innerHTML = rows;
+}
+
+function typeName(t) {
+  var map = { temp:'🌡 Température', courant:'⚡ Courant', vibration:'📳 Vibration',
+               pression:'💨 Pression', pieces:'⚙ Pièces', alert:'🚨 Alerte' };
+  return map[t] || t;
+}
+
+/* ── Stats historique ── */
+function updateHistStats() {
+  var hist = loadHistory();
+  document.getElementById('statTotal').textContent = hist.length;
+  var alerts = hist.filter(function(r){ return r.status === 'alert'; }).length;
+  document.getElementById('statAlerts').textContent = alerts;
+  var temps = hist.filter(function(r){ return r.type === 'temp'; })
+                  .map(function(r){ return parseFloat(r.value); })
+                  .filter(function(v){ return !isNaN(v); });
+  if (temps.length) {
+    var avg = temps.reduce(function(a,b){ return a+b; }, 0) / temps.length;
+    document.getElementById('statTempAvg').textContent = avg.toFixed(1);
+  }
+  var lastPiece = hist.filter(function(r){ return r.type === 'pieces'; });
+  if (lastPiece.length) {
+    document.getElementById('statPieces').textContent = lastPiece[lastPiece.length-1].value;
+  }
+}
+
+/* ── Export CSV ── */
+function exportCSV() {
+  var hist = loadHistory();
+  if (!hist.length) { alert('Aucune donnée à exporter.'); return; }
+  var fType = document.getElementById('filterType') ? document.getElementById('filterType').value : 'all';
+  if (fType !== 'all') hist = hist.filter(function(r){ return r.type === fType; });
+
+  var header = 'N°,Date,Heure,Horodatage ISO,Capteur,Valeur,Unité,Statut\r\n';
+  var rows = hist.map(function(r, i) {
+    return [i+1, r.date, r.time, r.ts, typeName(r.type).replace(/[🌡⚡📳💨⚙🚨]/g,'').trim(), r.value, r.unit, r.status].join(',');
+  }).join('\r\n');
+
+  var blob = new Blob(['\uFEFF' + header + rows], { type: 'text/csv;charset=utf-8;' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  a.href   = url;
+  a.download = 'sebn_capteurs_' + new Date().toISOString().slice(0,16).replace(/[T:]/g,'-') + '.csv';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  addLog('INFO', 'Export CSV — ' + hist.length + ' lignes téléchargées');
+}
+
+/* ── Effacer historique ── */
+function clearHistory() {
+  if (!confirm('Effacer tout l\'historique ? Cette action est irréversible.')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  updateHistCount(0);
+  refreshHistTable();
+  updateHistStats();
+  addLog('INFO', 'Historique effacé');
+}
+
+/* ══ INIT : charger compteur ══ */
+(function() {
+  var hist = loadHistory();
+  updateHistCount(hist.length);
+})();
+
+/* ══════════════════════════════════════════════════════════
+   SYSTÈME D'ALERTE VOCALE (Web Speech API)
+══════════════════════════════════════════════════════════ */
+var voiceSettings = {
+  enabled:  false,
+  normal:   true,
+  lang:     'fr-FR',
+  voiceIdx: -1,
+  volume:   1,
+  rate:     1,
+  msg:      'Attention ! Anomalie détectée sur la machine Deray Shuttle. Intervention requise immédiatement.'
+};
+
+var voiceSupported = 'speechSynthesis' in window;
+var isSpeaking = false;
+
+/* ── Charger paramètres sauvegardés ── */
+(function loadVoiceSettings() {
+  try {
+    var saved = JSON.parse(localStorage.getItem('sebn_voice') || '{}');
+    Object.assign(voiceSettings, saved);
+  } catch(e) {}
+  applyVoiceFab();
+})();
+
+/* ── Peupler la liste des voix ── */
+function updateVoiceList() {
+  if (!voiceSupported) return;
+  var lang = document.getElementById('voiceLang').value;
+  var sel  = document.getElementById('voiceSelect');
+  var voices = window.speechSynthesis.getVoices()
+    .filter(function(v) { return v.lang.startsWith(lang.split('-')[0]); });
+
+  if (!voices.length) {
+    /* Essai plus large (toutes langues) */
+    voices = window.speechSynthesis.getVoices();
+  }
+
+  sel.innerHTML = voices.map(function(v, i) {
+    return '<option value="' + i + '">' + v.name + ' (' + v.lang + ')</option>';
+  }).join('') || '<option value="-1">Voix système par défaut</option>';
+}
+
+/* Voix chargées de manière asynchrone sur certains navigateurs */
+if (voiceSupported) {
+  window.speechSynthesis.onvoiceschanged = updateVoiceList;
+}
+
+/* ── Parler ── */
+function speak(text, isAlert) {
+  if (!voiceSupported || !voiceSettings.enabled) return;
+  if (isSpeaking) window.speechSynthesis.cancel();
+
+  /* Remplacer {raison} par la vraie cause */
+  var msg = text.replace('{raison}', lastRaison || 'cause inconnue');
+
+  var utt    = new SpeechSynthesisUtterance(msg);
+  utt.volume = voiceSettings.volume;
+  utt.rate   = voiceSettings.rate;
+  utt.lang   = voiceSettings.lang;
+
+  /* Choisir la voix sélectionnée */
+  var voices = window.speechSynthesis.getVoices();
+  var filtered = voices.filter(function(v) {
+    return v.lang.startsWith(voiceSettings.lang.split('-')[0]);
+  });
+  if (voiceSettings.voiceIdx >= 0 && filtered[voiceSettings.voiceIdx]) {
+    utt.voice = filtered[voiceSettings.voiceIdx];
+  }
+
+  utt.onstart = function() {
+    isSpeaking = true;
+    if (isAlert) {
+      document.getElementById('voiceFab').classList.add('alerting');
+      document.getElementById('voiceIconTxt').textContent = '🔊';
+    }
+  };
+  utt.onend = utt.onerror = function() {
+    isSpeaking = false;
+    if (!isAlert) return;
+    /* Retirer animation seulement si plus d'alerte active */
+    if (lastAlert !== 'ALERTE') {
+      document.getElementById('voiceFab').classList.remove('alerting');
+      document.getElementById('voiceIconTxt').textContent = '🔊';
+    }
+  };
+
+  window.speechSynthesis.speak(utt);
+}
+
+/* ── Déclencher alerte vocale ── */
+function triggerVoiceAlert(isAlerte) {
+  if (!voiceSettings.enabled) return;
+  if (isAlerte) {
+    speak(voiceSettings.msg, true);
+    addLog('INFO', '🔊 Alerte vocale déclenchée');
+  } else if (voiceSettings.normal) {
+    speak('Système revenu à la normale. Fonctionnement nominal rétabli.', false);
+  }
+}
+
+/* ── FAB apparence ── */
+function applyVoiceFab() {
+  var fab = document.getElementById('voiceFab');
+  var txt = document.getElementById('voiceStatusTxt');
+  var ico = document.getElementById('voiceIconTxt');
+  if (!fab) return;
+  if (voiceSettings.enabled) {
+    fab.classList.add('active');
+    fab.classList.remove('alerting');
+    ico.textContent = '🔊';
+    txt.textContent = 'Activée — ' + voiceSettings.lang;
+  } else {
+    fab.classList.remove('active', 'alerting');
+    ico.textContent = '🔇';
+    txt.textContent = 'Désactivée';
+  }
+}
+
+/* ── Modal ── */
+function openVoiceModal() {
+  if (!voiceSupported) {
+    alert('⚠ Votre navigateur ne supporte pas la synthèse vocale (Web Speech API).\nUtilisez Chrome, Edge ou Safari.');
+    return;
+  }
+  /* Remplir les champs depuis les paramètres */
+  document.getElementById('voiceEnabled').checked = voiceSettings.enabled;
+  document.getElementById('voiceNormal').checked  = voiceSettings.normal;
+  document.getElementById('voiceLang').value       = voiceSettings.lang;
+  document.getElementById('voiceVolume').value     = voiceSettings.volume;
+  document.getElementById('voiceRate').value       = voiceSettings.rate;
+  document.getElementById('voiceMsg').value        = voiceSettings.msg;
+  document.getElementById('voiceVolVal').textContent  = Math.round(voiceSettings.volume * 100) + '%';
+  document.getElementById('voiceRateVal').textContent = voiceSettings.rate + '×';
+  updateVoiceList();
+  document.getElementById('voiceModalOverlay').classList.add('open');
+}
+
+function closeVoiceModal(e) {
+  if (e && e.target !== document.getElementById('voiceModalOverlay')) return;
+  document.getElementById('voiceModalOverlay').classList.remove('open');
+}
+
+function toggleVoice() {
+  voiceSettings.enabled = document.getElementById('voiceEnabled').checked;
+  applyVoiceFab();
+}
+
+function saveVoiceSettings() {
+  voiceSettings.enabled  = document.getElementById('voiceEnabled').checked;
+  voiceSettings.normal   = document.getElementById('voiceNormal').checked;
+  voiceSettings.lang     = document.getElementById('voiceLang').value;
+  voiceSettings.voiceIdx = parseInt(document.getElementById('voiceSelect').value) || -1;
+  voiceSettings.volume   = parseFloat(document.getElementById('voiceVolume').value);
+  voiceSettings.rate     = parseFloat(document.getElementById('voiceRate').value);
+  voiceSettings.msg      = document.getElementById('voiceMsg').value;
+  try { localStorage.setItem('sebn_voice', JSON.stringify(voiceSettings)); } catch(e) {}
+  applyVoiceFab();
+  document.getElementById('voiceModalOverlay').classList.remove('open');
+  addLog('INFO', '🔊 Alertes vocales ' + (voiceSettings.enabled ? 'activées' : 'désactivées'));
+}
+
+function testVoice() {
+  var tmpEnabled = voiceSettings.enabled;
+  voiceSettings.enabled = true;
+  speak('Test du système d\'alerte vocale SEBN.TN. Alerte anomalie détectée sur Deray Shuttle !', true);
+  voiceSettings.enabled = tmpEnabled;
+}
+
+
+/* Rôles lisibles */
+var ROLE_LABELS = {
+  'ingenieur':   'Ingénieur IoT',
+  'technicien':  'Technicien',
+  'superviseur': 'Superviseur',
+  'etudiant':    'Étudiant / Stagiaire',
+  'autre':       'Utilisateur',
+  '':            'Utilisateur'
+};
+
+/* Comptes par défaut SEBN.TN */
+var DEFAULT_ACCOUNTS = [
+  { prenom:'Admin', nom:'SEBN',   email:'admin@sebn.tn',  password:'sebn2024',  role:'superviseur' },
+  { prenom:'Nadine', nom:'',      email:'nadine@sebn.tn', password:'nadine123', role:'ingenieur' }
+];
+
+function getAllAccounts() {
+  var stored = JSON.parse(localStorage.getItem('sebn_accounts') || '[]');
+  /* Merge defaults (ne pas dupliquer) */
+  DEFAULT_ACCOUNTS.forEach(function(def) {
+    if (!stored.find(function(a){ return a.email === def.email; }))
+      stored.push(def);
+  });
+  return stored;
+}
+
+/* ── Récupérer session ── */
+function getSession() {
+  var s = sessionStorage.getItem('sebn_user');
+  if (!s) s = localStorage.getItem('sebn_user');
+  return s ? JSON.parse(s) : null;
+}
+
+/* ── Afficher infos utilisateur dans topbar ── */
+function showUser(user) {
+  var initials = (user.prenom ? user.prenom[0] : '') +
+                 (user.nom    ? user.nom[0]    : '');
+  initials = initials.toUpperCase() || '?';
+  document.getElementById('userAvatar').textContent = initials;
+  document.getElementById('userNameTxt').textContent =
+    (user.prenom + ' ' + (user.nom||'')).trim();
+  document.getElementById('userRoleTxt').textContent =
+    ROLE_LABELS[user.role] || 'Utilisateur';
+  document.getElementById('ddName').textContent =
+    (user.prenom + ' ' + (user.nom||'')).trim();
+  document.getElementById('ddEmail').textContent = user.email;
+}
+
+/* ── Toggle dropdown ── */
+function toggleDD() {
+  var dd = document.getElementById('userDropdown');
+  dd.classList.toggle('open');
+}
+/* Fermer dropdown en cliquant ailleurs */
+document.addEventListener('click', function(e) {
+  var badge = document.getElementById('userBadge');
+  if (badge && !badge.contains(e.target)) {
+    document.getElementById('userDropdown').classList.remove('open');
+  }
+});
+
+function goProfile()  { alert('Profil de ' + document.getElementById('userNameTxt').textContent); }
+function goSettings() { alert('Paramètres — fonctionnalité à venir'); }
+
+/* ── Déconnexion ── */
+function doLogout() {
+  if (!confirm('Voulez-vous vous déconnecter ?')) return;
+  sessionStorage.removeItem('sebn_user');
+  localStorage.removeItem('sebn_user');
+  window.location.href = 'index.html';
+}
+
+/* ── GUARD : vérifier session au chargement ── */
+(function checkAuth() {
+  var user = getSession();
+  var overlay = document.getElementById('authOverlay');
+
+  if (!user) {
+    /* Pas de session → redirection login */
+    overlay.innerHTML =
+      '<div style="text-align:center;padding:24px">' +
+      '<div style="font-size:32px;margin-bottom:12px">🔒</div>' +
+      '<div style="font-size:15px;font-weight:700;color:#fff;margin-bottom:6px">Accès restreint</div>' +
+      '<div style="font-size:12px;color:#8b9dc3;margin-bottom:20px">Vous devez être connecté pour accéder au dashboard</div>' +
+      '<a href="login.html" style="display:inline-block;padding:11px 24px;background:linear-gradient(135deg,#2563eb,#3b82f6);color:#fff;font-size:13px;font-weight:700;border-radius:10px;text-decoration:none">Se connecter →</a>' +
+      '<div style="margin-top:12px"><a href="index.html" style="font-size:11px;color:#4a5f85;text-decoration:none">← Retour à l\'accueil</a></div>' +
+      '</div>';
+    /* Redirection auto après 2.5s */
+    setTimeout(function() { window.location.href = 'login.html'; }, 2500);
+    return;
+  }
+
+  /* Session valide → afficher dashboard */
+  overlay.classList.add('hidden');
+  showUser(user);
+  addLog('INFO', 'Connecté en tant que ' + (user.prenom||user.email) + ' — ' + (ROLE_LABELS[user.role]||'Utilisateur'));
+})();
+
+
+/* ══════════════════════════════════════════════════════════
+   MODE NUIT / JOUR
+══════════════════════════════════════════════════════════ */
+var isDay = false;
+
+function toggleTheme() {
+  isDay = !isDay;
+  applyTheme(isDay);
+  localStorage.setItem('sebn_theme', isDay ? 'day' : 'night');
+}
+
+function applyTheme(day) {
+  var body = document.body;
+  var btn  = document.getElementById('themeBtn');
+  var icon = document.getElementById('themeIcon');
+  var txt  = document.getElementById('themeTxt');
+
+  if (day) {
+    body.classList.add('day-mode');
+    icon.textContent = '☀️';
+    txt.textContent  = 'Mode nuit';
+    btn.title        = 'Passer en mode nuit';
+  } else {
+    body.classList.remove('day-mode');
+    icon.textContent = '🌙';
+    txt.textContent  = 'Mode jour';
+    btn.title        = 'Passer en mode jour';
+  }
+
+  // Adapter les couleurs du sparkline SVG
+  updateSparkTheme(day);
+}
+
+function updateSparkTheme(day) {
+  var svg = document.getElementById('sparkSvg');
+  if (!svg) return;
+  var bg = svg.querySelector('rect');
+  if (bg) bg.setAttribute('fill', day ? '#f8fafc' : '#0d1117');
+}
+
+/* Charger le thème sauvegardé */
+(function() {
+  var saved = localStorage.getItem('sebn_theme');
+  if (saved === 'day') {
+    isDay = true;
+    applyTheme(true);
+  }
+})();
+
+
+</script>
+</body>
+</html>
