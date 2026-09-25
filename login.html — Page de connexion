@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEBN.TN — Connexion</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#050d1a; --blue:#2563eb; --blue2:#3b82f6; --teal:#0891b2;
+  --green:#10b981; --red:#ef4444;
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#e8f0fe; --muted:#8b9dc3; --subtle:#4a5f85;
+}
+html, body { height: 100%; }
+body { background:var(--navy);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;overflow-x:hidden; }
+body::before { content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(37,99,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(37,99,235,.04) 1px,transparent 1px);background-size:44px 44px;pointer-events:none;z-index:0; }
+.orb { position:fixed;border-radius:50%;filter:blur(80px);pointer-events:none;z-index:0; }
+.orb1 { width:500px;height:500px;background:rgba(37,99,235,.12);top:-150px;right:-100px; }
+.orb2 { width:400px;height:400px;background:rgba(8,145,178,.08);bottom:-100px;left:-80px; }
+.auth-wrap { position:relative;z-index:1;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px; }
+.auth-card { background:rgba(10,22,40,.85);border:1px solid var(--border2);border-radius:20px;padding:40px 44px;width:100%;max-width:440px;backdrop-filter:blur(20px);position:relative; }
+.auth-card::before { content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:20px 20px 0 0;background:linear-gradient(90deg,var(--blue),var(--teal)); }
+.logo-block { text-align:center;margin-bottom:32px; }
+.logo-pill { display:inline-flex;align-items:center;background:#fff;border-radius:10px;padding:7px 16px;margin-bottom:16px;box-shadow:0 0 30px rgba(37,99,235,.25); }
+.logo-pill img { height:28px;width:auto;display:block;object-fit:contain; }
+.logo-block h2 { font-size:22px;font-weight:700;color:#fff; }
+.logo-block p  { font-size:12px;color:var(--muted);margin-top:5px; }
+.form-group { margin-bottom:18px; }
+.form-label { display:block;font-size:12px;font-weight:600;color:var(--muted);margin-bottom:7px;letter-spacing:.03em; }
+.form-input { width:100%;padding:12px 16px;background:rgba(255,255,255,.05);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-size:14px;font-family:inherit;outline:none;transition:all .25s; }
+.form-input::placeholder { color:var(--subtle); }
+.form-input:focus { border-color:var(--blue2);background:rgba(37,99,235,.08);box-shadow:0 0 0 3px rgba(37,99,235,.15); }
+.form-input.error { border-color:var(--red);box-shadow:0 0 0 3px rgba(239,68,68,.12); }
+.form-error { font-size:11px;color:#fca5a5;margin-top:5px;display:none; }
+.form-error.show { display:block; }
+.btn-primary { width:100%;padding:13px;background:linear-gradient(135deg,var(--blue),var(--blue2));border:none;border-radius:10px;color:#fff;font-size:14px;font-weight:700;font-family:inherit;cursor:pointer;transition:all .25s;letter-spacing:.02em; }
+.btn-primary:hover { transform:translateY(-1px);box-shadow:0 8px 25px rgba(37,99,235,.4); }
+.btn-primary:disabled { opacity:.6;cursor:default;transform:none; }
+.btn-primary .spinner { display:none;width:16px;height:16px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin:0 auto; }
+.btn-primary.loading .btn-text { display:none; }
+.btn-primary.loading .spinner { display:block; }
+@keyframes spin { to { transform:rotate(360deg); } }
+.alert-box { padding:12px 14px;border-radius:9px;font-size:12px;font-weight:500;margin-bottom:18px;display:none; }
+.alert-box.show { display:flex;align-items:center;gap:8px; }
+.alert-box.err { background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);color:#fca5a5; }
+.auth-footer { text-align:center;margin-top:18px;font-size:12px;color:var(--muted); }
+.auth-link { color:var(--blue2);font-weight:600;text-decoration:none;transition:color .2s; }
+.auth-link:hover { color:#93c5fd; }
+.demo-box { background:rgba(37,99,235,.07);border:1px solid rgba(37,99,235,.2);border-radius:10px;padding:12px 14px;margin-bottom:18px;font-size:11px;color:var(--muted); }
+.demo-box strong { color:var(--blue2); }
+.demo-row { display:flex;justify-content:space-between;margin-top:5px;align-items:center; }
+.demo-copy { cursor:pointer;color:var(--teal);font-weight:600; }
+.demo-copy:hover { color:#67e8f9; }
+.remember-row { display:flex;align-items:center;justify-content:space-between;margin-bottom:22px; }
+.checkbox-label { display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);cursor:pointer; }
+.checkbox-label input { accent-color:var(--blue2);cursor:pointer; }
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+<div class="auth-wrap">
+  <div class="auth-card">
+    <div class="logo-block">
+      <div class="logo-pill"><img src="[VOTRE_LOGO_BASE64]" alt="SEBN.TN"></div>
+      <h2>Connexion</h2>
+      <p>Accédez à votre dashboard IoT SEBN.TN</p>
+    </div>
+
+    <div class="demo-box">
+      <strong>Comptes disponibles :</strong>
+      <div class="demo-row"><span>admin@sebn.tn</span><span style="color:var(--subtle)">sebn2024</span><span class="demo-copy" onclick="fill('admin@sebn.tn','sebn2024')">Remplir</span></div>
+      <div class="demo-row"><span>nadine@sebn.tn</span><span style="color:var(--subtle)">nadine123</span><span class="demo-copy" onclick="fill('nadine@sebn.tn','nadine123')">Remplir</span></div>
+    </div>
+
+    <div class="alert-box err" id="alertErr"><span>⚠</span><span id="alertErrTxt">Identifiants incorrects</span></div>
+
+    <form id="loginForm" onsubmit="doLogin(event)">
+      <div class="form-group">
+        <label class="form-label">Adresse email</label>
+        <input type="email" id="email" class="form-input" placeholder="votre@email.com" required>
+        <div class="form-error" id="errEmail">Email invalide</div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Mot de passe</label>
+        <input type="password" id="password" class="form-input" placeholder="••••••••" required>
+        <div class="form-error" id="errPwd">Mot de passe requis</div>
+      </div>
+      <div class="remember-row">
+        <label class="checkbox-label"><input type="checkbox" id="remember"> Se souvenir de moi</label>
+      </div>
+      <button type="submit" class="btn-primary" id="loginBtn">
+        <span class="btn-text">Se connecter →</span>
+        <div class="spinner"></div>
+      </button>
+    </form>
+
+    <div class="auth-footer" style="margin-top:20px">Pas encore de compte ? <a href="signup.html" class="auth-link">Créer un compte</a></div>
+    <div class="auth-footer" style="margin-top:8px"><a href="index.html" class="auth-link" style="color:var(--subtle)">← Retour à l'accueil</a></div>
+  </div>
+</div>
+
+<script>
+var DEFAULT_ACCOUNTS = [
+  { prenom:'Admin', nom:'SEBN',  email:'admin@sebn.tn',  password:'sebn2024',  role:'superviseur' },
+  { prenom:'Nadine',nom:'',      email:'nadine@sebn.tn', password:'nadine123', role:'ingenieur' }
+];
+function getAllAccounts() {
+  var stored = JSON.parse(localStorage.getItem('sebn_accounts') || '[]');
+  DEFAULT_ACCOUNTS.forEach(function(def) {
+    if (!stored.find(function(a){ return a.email === def.email; })) stored.push(def);
+  });
+  return stored;
+}
+function fill(e, p) { document.getElementById('email').value = e; document.getElementById('password').value = p; }
+function doLogin(e) {
+  e.preventDefault();
+  var email = document.getElementById('email').value.trim();
+  var pwd   = document.getElementById('password').value;
+  var btn   = document.getElementById('loginBtn');
+  document.getElementById('alertErr').className = 'alert-box err';
+  document.getElementById('email').classList.remove('error');
+  document.getElementById('password').classList.remove('error');
+  if (!email || !email.includes('@')) {
+    document.getElementById('email').classList.add('error');
+    document.getElementById('errEmail').classList.add('show');
+    return;
+  }
+  btn.classList.add('loading'); btn.disabled = true;
+  setTimeout(function() {
+    var user = getAllAccounts().find(function(u){ return u.email === email && u.password === pwd; });
+    if (user) {
+      var data = JSON.stringify(user);
+      sessionStorage.setItem('sebn_user', data);
+      if (document.getElementById('remember').checked) localStorage.setItem('sebn_user', data);
+      window.location.href = 'dashboard_pro_v3.html';
+    } else {
+      btn.classList.remove('loading'); btn.disabled = false;
+      document.getElementById('alertErr').className = 'alert-box err show';
+      document.getElementById('alertErrTxt').textContent = 'Email ou mot de passe incorrect.';
+      document.getElementById('email').classList.add('error');
+      document.getElementById('password').classList.add('error');
+    }
+  }, 1200);
+}
+(function() {
+  var active = sessionStorage.getItem('sebn_user') || localStorage.getItem('sebn_user');
+  if (active) { window.location.href = 'dashboard_pro_v3.html'; }
+})();
+</script>
+</body>
+</html>
