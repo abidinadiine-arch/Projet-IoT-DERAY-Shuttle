@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SEBN.TN — IoT Platform</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --navy:#050d1a; --navy2:#0a1628; --navy3:#0f2040;
+  --blue:#2563eb; --blue2:#3b82f6; --teal:#0891b2;
+  --green:#10b981; --red:#ef4444;
+  --border:rgba(255,255,255,.08); --border2:rgba(255,255,255,.14);
+  --text:#e8f0fe; --muted:#8b9dc3; --subtle:#4a5f85;
+}
+html, body { height: 100%; }
+body {
+  background: var(--navy);
+  color: var(--text);
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 14px;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image:
+    linear-gradient(rgba(37,99,235,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(37,99,235,.04) 1px, transparent 1px);
+  background-size: 44px 44px;
+  pointer-events: none; z-index: 0;
+}
+.orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; z-index: 0; }
+.orb1 { width:500px;height:500px;background:rgba(37,99,235,.12); top:-150px;right:-100px; }
+.orb2 { width:400px;height:400px;background:rgba(8,145,178,.08); bottom:-100px;left:-80px; }
+
+.welcome-wrap {
+  position: relative; z-index: 1;
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+@media(max-width:800px){ .welcome-wrap{ grid-template-columns:1fr; } .wl-right{ display:none; } }
+
+.wl-left {
+  display: flex; flex-direction: column;
+  justify-content: center; padding: 60px 56px;
+}
+.wl-logo {
+  display: inline-flex; align-items: center;
+  background: #fff; border-radius: 10px;
+  padding: 7px 16px; margin-bottom: 40px;
+  width: fit-content;
+  box-shadow: 0 0 30px rgba(37,99,235,.25);
+}
+.wl-logo img { height: 28px; width: auto; display: block; object-fit: contain; }
+
+.hero-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(37,99,235,.12);
+  border: 1px solid rgba(37,99,235,.25);
+  border-radius: 20px; padding: 5px 14px;
+  font-size: 11px; font-weight: 700; color: var(--blue2);
+  letter-spacing: .05em; margin-bottom: 22px;
+}
+.hero-badge-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 8px var(--green);
+  animation: pulse-dot 2s infinite;
+}
+@keyframes pulse-dot { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+.hero-title { font-size: 48px; font-weight: 800; color: #fff; line-height: 1.1; margin-bottom: 16px; }
+.hero-title span {
+  background: linear-gradient(135deg, var(--blue2), var(--teal));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+}
+.hero-sub { font-size: 15px; color: var(--muted); line-height: 1.65; max-width: 420px; margin-bottom: 36px; }
+
+.hero-btns { display: flex; gap: 12px; flex-wrap: wrap; }
+.btn-hero-primary {
+  padding: 14px 28px;
+  background: linear-gradient(135deg, var(--blue), var(--blue2));
+  border: none; border-radius: 12px;
+  color: #fff; font-size: 14px; font-weight: 700;
+  font-family: inherit; cursor: pointer;
+  transition: all .25s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 30px rgba(37,99,235,.4); }
+
+.btn-hero-sec {
+  padding: 14px 28px;
+  background: rgba(255,255,255,.06);
+  border: 1px solid var(--border2);
+  border-radius: 12px; color: var(--text);
+  font-size: 14px; font-weight: 600;
+  font-family: inherit; cursor: pointer;
+  transition: all .25s; text-decoration: none;
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.btn-hero-sec:hover { background: rgba(255,255,255,.1); }
+
+.features { margin-top: 48px; display: flex; flex-direction: column; gap: 14px; }
+.feat {
+  display: flex; align-items: flex-start; gap: 14px;
+  padding: 14px 18px;
+  background: rgba(255,255,255,.03);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+}
+.feat-icon { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+.feat-title { font-size: 13px; font-weight: 700; color: #fff; margin-bottom: 2px; }
+.feat-desc  { font-size: 11px; color: var(--muted); }
+
+.wl-right {
+  background: var(--navy3);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  padding: 40px; position: relative; overflow: hidden;
+}
+.wl-right::before {
+  content: '';
+  position: absolute; top:0; left:0; right:0;
+  height: 3px;
+  background: linear-gradient(90deg, var(--blue), var(--teal), var(--green));
+}
+.mock-dash {
+  background: rgba(5,13,26,.8);
+  border: 1px solid var(--border2);
+  border-radius: 16px; padding: 20px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.5);
+}
+.mock-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.mock-logo { background:#fff;border-radius:5px;padding:3px 8px;height:24px;display:flex;align-items:center; }
+.mock-logo img { height:14px;width:auto;display:block;object-fit:contain; }
+.mock-dot-grp { display:flex;gap:5px;align-items:center; }
+.mock-dot { width:8px;height:8px;border-radius:50%; }
+
+.mock-kpis { display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px; }
+.mock-kpi { background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:8px;padding:10px 12px;border-top:2px solid; }
+.mk-lbl { font-size:9px;color:var(--subtle);margin-bottom:4px;text-transform:uppercase;letter-spacing:.06em; }
+.mk-val { font-size:20px;font-weight:800;color:#fff; }
+.mk-bar { height:2px;margin-top:6px;border-radius:1px; }
+
+.mock-chart { background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px; }
+.mc-title { font-size:9px;color:var(--subtle);margin-bottom:8px;text-transform:uppercase;letter-spacing:.06em; }
+svg.mc-svg { width:100%;height:50px;display:block; }
+
+.mock-status {
+  display:flex;align-items:center;gap:8px;
+  padding:8px 12px;
+  background:rgba(16,185,129,.08);border:1px solid rgba(16,185,129,.2);
+  border-radius:8px;margin-top:10px;
+}
+.ms-dot { width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse-dot 2s infinite; }
+.ms-txt { font-size:11px;font-weight:600;color:#6ee7b7; }
+
+.wl-footer {
+  position:fixed;bottom:0;left:0;right:0;
+  background:rgba(5,13,26,.8);border-top:1px solid var(--border);
+  padding:10px 40px;
+  display:flex;align-items:center;justify-content:space-between;
+  font-size:11px;color:var(--subtle);
+  backdrop-filter:blur(12px);z-index:10;
+}
+</style>
+</head>
+<body>
+<div class="orb orb1"></div>
+<div class="orb orb2"></div>
+
+<div class="welcome-wrap">
+  <div class="wl-left">
+    <div class="wl-logo"><img src="[VOTRE_LOGO_BASE64]" alt="SEBN.TN"></div>
+    <div class="hero-badge"><div class="hero-badge-dot"></div>Système IoT en ligne</div>
+    <h1 class="hero-title">Surveillance<br><span>industrielle</span><br>en temps réel</h1>
+    <p class="hero-sub">
+      Plateforme IoT embarquée pour la surveillance de la machine
+      <strong style="color:#fff">Deray Shuttle 2.0</strong>.
+      Monitoring des capteurs, détection d'anomalies et alertes instantanées via MQTT.
+    </p>
+    <div class="hero-btns">
+      <a href="login.html" class="btn-hero-primary">Connexion &rarr;</a>
+      <a href="signup.html" class="btn-hero-sec">Créer un compte</a>
+    </div>
+    <div class="features">
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(37,99,235,.15)">🌡</div>
+        <div><div class="feat-title">4 capteurs industriels</div><div class="feat-desc">DS18B20 · ACS712 · SW-420 · TCRT5000 — données en temps réel</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(8,145,178,.15)">📡</div>
+        <div><div class="feat-title">Communication MQTT</div><div class="feat-desc">ESP32 → broker.hivemq.com → Dashboard web + Application mobile</div></div>
+      </div>
+      <div class="feat">
+        <div class="feat-icon" style="background:rgba(16,185,129,.15)">⚡</div>
+        <div><div class="feat-title">Détection d'anomalies</div><div class="feat-desc">Alertes automatiques — LED rouge + notification dashboard</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="wl-right">
+    <div class="mock-dash">
+      <div class="mock-topbar">
+        <div class="mock-logo"><img src="[VOTRE_LOGO_BASE64]" alt="SEBN.TN"></div>
+        <div class="mock-dot-grp">
+          <div class="mock-dot" style="background:var(--green);box-shadow:0 0 6px var(--green)"></div>
+          <div style="font-size:9px;color:#6ee7b7;font-weight:700">LIVE</div>
+        </div>
+      </div>
+      <div class="mock-kpis">
+        <div class="mock-kpi" style="border-top-color:#3b82f6"><div class="mk-lbl">Température</div><div class="mk-val">26.4°C</div><div class="mk-bar" style="width:52%;background:#3b82f6"></div></div>
+        <div class="mock-kpi" style="border-top-color:#0891b2"><div class="mk-lbl">Courant</div><div class="mk-val">1.24A</div><div class="mk-bar" style="width:62%;background:#0891b2"></div></div>
+        <div class="mock-kpi" style="border-top-color:#10b981"><div class="mk-lbl">Vibration</div><div class="mk-val" style="font-size:13px;color:#6ee7b7">● Stable</div></div>
+        <div class="mock-kpi" style="border-top-color:#f43f5e"><div class="mk-lbl">Pièces</div><div class="mk-val" style="color:#f43f5e">0</div></div>
+      </div>
+      <div class="mock-chart">
+        <div class="mc-title">Historique température</div>
+        <svg class="mc-svg" viewBox="0 0 340 50" preserveAspectRatio="none">
+          <polyline points="0,38 40,32 80,30 120,25 160,28 200,22 240,26 280,24 320,20 340,22"
+            fill="rgba(59,130,246,.1)" stroke="#3b82f6" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
+          <circle cx="340" cy="22" r="4" fill="#10b981"/>
+        </svg>
+      </div>
+      <div class="mock-status">
+        <div class="ms-dot"></div>
+        <div class="ms-txt">Fonctionnement normal — tous capteurs OK</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wl-footer">
+  <div>SEBN.TN · Projet fin d'études Master · Surveillance IoT — Deray Shuttle 2.0</div>
+  <div id="wlTime" style="font-family:monospace"></div>
+</div>
+
+<script>
+function tick() { document.getElementById('wlTime').textContent = new Date().toLocaleTimeString('fr-FR'); }
+tick(); setInterval(tick, 1000);
+
+(function checkSession() {
+  var s = sessionStorage.getItem('sebn_user') || localStorage.getItem('sebn_user');
+  if (!s) return;
+  try {
+    var user = JSON.parse(s);
+    var ROLE_LABELS = { 'ingenieur':'Ingénieur IoT','technicien':'Technicien','superviseur':'Superviseur','etudiant':'Étudiant / Stagiaire','':'Utilisateur' };
+    var name = (user.prenom + ' ' + (user.nom || '')).trim();
+    var role = ROLE_LABELS[user.role] || 'Utilisateur';
+    document.querySelector('.hero-btns').innerHTML =
+      '<a href="dashboard_pro_v3.html" class="btn-hero-primary">📡 Accéder au dashboard →</a>' +
+      '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:12px;font-size:12px;">' +
+        '<div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#2563eb,#0891b2);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:12px;color:#fff">' + (user.prenom ? user.prenom[0].toUpperCase() : '?') + '</div>' +
+        '<div><div style="color:#fff;font-weight:600">' + name + '</div><div style="color:#6b85b0;font-size:10px">' + role + '</div></div>' +
+        '<span onclick="doLogout()" style="cursor:pointer;color:#4a5f85;font-size:11px;margin-left:6px;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,.07)">Déconnexion</span>' +
+      '</div>';
+  } catch(e) {}
+})();
+
+function doLogout() {
+  if (!confirm('Voulez-vous vous déconnecter ?')) return;
+  sessionStorage.removeItem('sebn_user'); localStorage.removeItem('sebn_user');
+  window.location.reload();
+}
+</script>
+</body>
+</html>
